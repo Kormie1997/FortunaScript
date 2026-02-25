@@ -6,10 +6,11 @@ import paperBg from "/paper.jpg";
 
 const cellSize = 32;
 
-// Segédsorsjegy szám generálása (7 jegyű)
-const generateTicketNumber = () => {
-  return Math.floor(1000000 + Math.random() * 9000000).toString();
-};
+const BASE_PRICE = 400;
+const JOKER_PRICE = 400;
+
+
+
 
 // 5 véletlen szám generálása 1–90 között
 const generateQuickPick = () => {
@@ -38,7 +39,9 @@ const generateSmartQuickPick = () => {
 
 // 6 számjegyű Joker generálása
 const generateJoker = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return Math.floor(Math.random() * 1000000)
+    .toString()
+    .padStart(6, "0");
 };
 
 export default function App() {
@@ -52,21 +55,22 @@ export default function App() {
   const [jokerEnabled, setJokerEnabled] = useState(false);
 
   // Joker mezők (max 3)
-  const [jokerFields, setJokerFields] = useState([
-    {
-      active: true,
-      custom: false,
-      number: generateJoker(),
-      customValue: "",
-    },
-  ]);
+const createJoker = () => ({
+  active: true,
+  value: generateJoker(),
+});
+
+const [jokerFields, setJokerFields] = useState([
+  createJoker(),
+  createJoker(),
+  createJoker(),
+]);
 
   // Plusz gépi játékok (max 14)
   const [extraMachineCount, setExtraMachineCount] = useState(0);
   const [extraMachinePlays, setExtraMachinePlays] = useState([]);
 
-  // Segédsorsjegy szám (frontend dísz)
-  const [ticketNumberh] = useState(generateTicketNumber());
+
 
   // Joker mező hozzáadása
   const addJokerField = () => {
@@ -83,13 +87,15 @@ export default function App() {
   };
 
   // Joker mező frissítése
-  const refreshJoker = (index) => {
-    setJokerFields((prev) =>
-      prev.map((j, i) =>
-        i === index ? { ...j, number: generateJoker() } : j
-      )
-    );
-  };
+const refreshJoker = (index) => {
+  setJokerFields((prev) =>
+    prev.map((j, i) =>
+      i === index && j.active
+        ? { ...j, number: generateJoker() }
+        : j
+    )
+  );
+};
 
   // Joker mező törlése
   const deleteJoker = (index) => {
@@ -100,13 +106,32 @@ export default function App() {
   };
 
   // Joker mező pipája (játékban / nem)
-  const toggleJokerActive = (index) => {
-    setJokerFields((prev) =>
-      prev.map((j, i) =>
-        i === index ? { ...j, active: !j.active } : j
-      )
-    );
-  };
+const toggleJokerActive = (index) => {
+  setJokerFields((prev) =>
+    prev.map((j, i) => {
+      if (i !== index) return j;
+
+      // Ha kikapcsoljuk → ürítjük
+      if (j.active) {
+        return {
+          ...j,
+          active: false,
+          number: "",
+          customValue: "",
+        };
+      }
+
+      // Ha bekapcsoljuk → generálunk
+      return {
+        ...j,
+        active: true,
+        custom: false,
+        number: generateJoker(),
+        customValue: "",
+      };
+    })
+  );
+};
 
   // Joker mező saját szám opció
   const toggleCustomJoker = (index) => {
@@ -118,6 +143,37 @@ export default function App() {
       )
     );
   };
+
+  //új Joker mező részhez
+  const updateJokerValue = (index, value) => {
+  const cleaned = value.replace(/\D/g, "").slice(0, 6);
+
+  setJokerFields(prev =>
+    prev.map((j, i) =>
+      i === index ? { ...j, value: cleaned } : j
+    )
+  );
+};
+
+const shuffleJoker = (index) => {
+  setJokerFields(prev =>
+    prev.map((j, i) =>
+      i === index && j.active
+        ? { ...j, value: generateJoker() }
+        : j
+    )
+  );
+};
+
+const removeJoker = (index) => {
+  setJokerFields(prev =>
+    prev.map((j, i) =>
+      i === index
+        ? { ...j, active: false, value: "" }
+        : j
+    )
+  );
+};
 
   // Joker mező saját szám bevitel
   const updateCustomJoker = (index, value) => {
@@ -186,6 +242,32 @@ export default function App() {
     setGrids((prev) => prev.map(() => generateQuickPick()));
   };
 
+  // Kitöltött mezők
+const filledGrids = grids.filter(g => g.length === 5).length;
+
+// Aktív Joker mezők
+const activeJokers = jokerEnabled
+  ? jokerFields.filter(j => j.active).length
+  : 0;
+
+// Plusz gépi játékok
+const extraPlays = extraMachinePlays.length;
+
+// Szorzó sorsolás alapján
+const drawMultiplier =
+  drawCount === "1"
+    ? 1
+    : drawCount === "5"
+    ? 5
+    : 1; // folyamatos most 1
+
+// Végösszeg
+const totalPrice =
+  (filledGrids * BASE_PRICE +
+    activeJokers * JOKER_PRICE +
+    extraPlays * BASE_PRICE) *
+  drawMultiplier;
+
   // Mező komponens
 const LottoGrid = ({
   index,
@@ -203,6 +285,7 @@ const LottoGrid = ({
         borderRadius: 6,
         background: "rgba(255,255,255,0.85)",
         marginBottom: 20,
+        
       }}
     >
       {/* FEJLÉC – itt írjuk ki a kiválasztott számokat */}
@@ -213,8 +296,14 @@ const LottoGrid = ({
           marginBottom: 10,
         }}
       >
-        <h3 style={{ margin: 0, color: "red" }}>
-          {index + 1}. mező: {selected.join(", ")}
+        <h3 style={{
+            margin: 0,
+            color: "black",
+            fontWeight: "bold",
+            fontSize: 18,
+            letterSpacing: 2,
+            }}>
+            {index + 1}. MEZŐ
         </h3>
 
         <div style={{ display: "flex", gap: 6 }}>
@@ -278,16 +367,16 @@ const LottoGrid = ({
               style={{
                 width: cellSize,
                 height: cellSize,
-                border: "1px solid red",
+                border: "1px solid black",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 cursor: "pointer",
-                background: isSelected ? "#e0f0ff" : "#fff",
-                color: isSelected ? "darkblue" : "black",
-                fontWeight: isSelected ? "bold" : "normal",
-                transition: "0.5s",
-              }}
+                background: isSelected ? "black" : "white",
+                color: isSelected ? "white" : "black",
+                fontWeight: "bold",
+                fontSize: 14,
+            }}
             >
               {isSelected ? "X" : num}
             </div>
@@ -298,22 +387,38 @@ const LottoGrid = ({
   );
 };
   // Beküldés
-  const handleSubmit = () => {
-    const invalid = grids.some((g) => g.length !== 5);
-    if (invalid) {
-      alert("Minden mezőben pontosan 5 számot kell választani!");
-      return;
-    }
+const handleSubmit = () => {
+  // Csak azokat a mezőket vizsgáljuk,
+  // ahol legalább 1 szám ki van jelölve
+  const invalid = grids.some(
+    (g) => g.length > 0 && g.length !== 5
+  );
 
+  if (invalid) {
+    alert("Ha egy mezőn jelölsz számot, pontosan 5 számot kell választani!");
+    return;
+  }
+
+  // Legalább egy érvényes mező legyen
+  const hasValidGrid = grids.some((g) => g.length === 5);
+
+  if (!hasValidGrid) {
+    alert("Legalább egy mezőt ki kell tölteni 5 számmal!");
+    return;
+  }
+
+  // Joker validáció
+  if (jokerEnabled) {
     for (const j of jokerFields) {
       if (j.custom && j.customValue.length !== 6) {
         alert("A saját Joker számnak 6 számjegyűnek kell lennie!");
         return;
       }
     }
+  }
 
-    alert("Szelvény beküldve!");
-  };
+  alert("Szelvény beküldve!");
+};
 
   return (
     <div
@@ -369,7 +474,7 @@ const LottoGrid = ({
       lineHeight: "1.0",
       whiteSpace: "nowrap",
       color: "#008000",
-      fontFamily: "'Montserrat', sans-serif",
+      fontFamily: "'Arial Narrow', sans-serif",
     }}
   >
     <div
@@ -377,6 +482,7 @@ const LottoGrid = ({
         fontSize: 46,       // nagyobb, mint az alsó sor
         fontWeight: 800,    // extra vastag
         marginBottom: 2,
+        fontFamily: "'Futura Condensed ExtraBold', sans-serif",
       }}
     >
       NORMÁL
@@ -386,6 +492,7 @@ const LottoGrid = ({
       style={{
         fontSize: 24,
         fontWeight: 600,
+        fontFamily: "'Futura Condensed ExtraBold', sans-serif",
       }}
     >
       SEGÉDSORSJEGY
@@ -450,10 +557,11 @@ const LottoGrid = ({
           {/* JOKER DOBOZ */}
           <div
             style={{
-              padding: 16,
-              border: "2px solid red",
+              border: "1px solid #ddd",
+              padding: 10,
               borderRadius: 6,
-              background: "rgba(255,255,255,0.85)",
+              marginBottom: 10,
+              background: "#f8f8f8",
             }}
           >
             {/* Joker logó */}
@@ -491,6 +599,22 @@ const LottoGrid = ({
                     background: "#fff",
                   }}
                 >
+                  {/* Joker szám megjelenítése – csak akkor, ha aktív */}
+                <div
+                  style={{
+                    fontSize: 24,
+                    fontWeight: "bold",
+                    letterSpacing: 6,
+                    textAlign: "center",
+                    marginBottom: 6,
+                    background: "#eaeaea",
+                    padding: "6px 0",
+                    borderRadius: 4,
+                  }}
+                    >
+                    {j.active ? (j.custom ? j.customValue : j.number) : ""}
+                </div>
+
                   {/* Joker mező fejléc */}
                   <div
                     style={{
@@ -733,7 +857,44 @@ const LottoGrid = ({
               
             />
           ))}
+<div
+  style={{
+    marginTop: 20,
+    padding: 20,
+    border: "3px solid black",
+    borderRadius: 8,
+    background: "#fff",
+    fontFamily: "'Arial Narrow', sans-serif",
+  }}
+>
+  <div style={{ fontSize: 18, marginBottom: 8 }}>
+    Kitöltött mezők: {filledGrids}
+  </div>
 
+  {jokerEnabled && (
+    <div style={{ fontSize: 18, marginBottom: 8 }}>
+      Joker mezők: {activeJokers}
+    </div>
+  )}
+
+  {extraPlays > 0 && (
+    <div style={{ fontSize: 18, marginBottom: 8 }}>
+      Gépi mezők: {extraPlays}
+    </div>
+  )}
+
+  <hr style={{ margin: "12px 0" }} />
+
+  <div
+    style={{
+      fontSize: 26,
+      fontWeight: "bold",
+      textAlign: "right",
+    }}
+  >
+    Fizetendő: {totalPrice.toLocaleString()} Ft
+  </div>
+</div>
           <button
             onClick={handleSubmit}
             style={{
