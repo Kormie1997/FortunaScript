@@ -1,0 +1,77 @@
+/* Bootstrap CSS import */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* === EGYEDI STÍLUSOK === */
+
+/* Gradient szöveg (Fortuna Lotto logo) */
+.gradient-text {
+  background: linear-gradient(135deg, #f59e0b, #ea580c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hero banner gradient (főoldal) */
+.hero-gradient {
+  background: linear-gradient(135deg, #f59e0b, #ea580c, #dc2626);
+}
+
+/* Színes kártyák */
+.card-orange {
+  background: linear-gradient(135deg, #f59e0b, #ea580c);
+}
+
+.card-green {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.card-red {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.card-blue {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+/* Login/Register oldal színes csíkja */
+.card-top-bar {
+  height: 4px;
+  background: linear-gradient(90deg, #f59e0b, #ea580c, #dc2626);
+}
+
+/* Logo doboz */
+.logo-box {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #f59e0b, #ea580c);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
+}
+
+/* Spinner animáció */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Játék kártya hover */
+.game-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+
+/* Pointer */
+.cursor-pointer {
+  cursor: pointer;
+}

@@ -1,0 +1,620 @@
+/* Global Styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(245, 158, 11, 0.6); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #f59e0b, #ea580c);
+  border-radius: 3px;
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, #f59e0b, #ea580c, #dc2626);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glass Effect */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+/* Navigation */
+.nav-glass {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Hero Section */
+.hero-gradient {
+  background: linear-gradient(135deg, #f59e0b, #ea580c, #dc2626);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.5;
+}
+
+/* Game Cards */
+.game-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+.game-card-header {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-card-header img {
+  height: 80px;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
+
+.game-card:hover .game-card-header img {
+  transform: scale(1.1);
+}
+
+/* Lottery Ticket Styles */
+.ticket-wrapper {
+  display: flex;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.ticket-sidebar {
+  width: 320px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  height: fit-content;
+  position: sticky;
+  top: 100px;
+}
+
+.ticket-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.ticket-panel {
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 2px solid #e5e5e5;
+  transition: all 0.3s ease;
+}
+
+.ticket-panel:hover {
+  border-color: #f59e0b;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);
+}
+
+.ticket-panel.locked {
+  border-color: #84cc16;
+  background: #f0fdf4;
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ticket-header strong {
+  font-size: 16px;
+  color: #333;
+}
+
+/* Number Grid */
+.number-grid {
+  display: grid;
+  grid-template-columns: repeat(15, 1fr);
+  gap: 3px;
+  margin-top: 10px;
+}
+
+.number-cell {
+  border: 1.5px solid #d1d5db;
+  text-align: center;
+  font-size: 12px;
+  padding: 4px 2px;
+  background: #fff;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.15s ease;
+  user-select: none;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.number-cell:hover {
+  background: #fef3c7;
+  border-color: #f59e0b;
+}
+
+.number-cell.selected {
+  background: #dc2626;
+  color: white;
+  border-color: #dc2626;
+  font-weight: bold;
+}
+
+.number-cell.locked {
+  background: #e5e7eb;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Selected Numbers Display */
+.selected-numbers {
+  font-size: 14px;
+  margin-top: 8px;
+  min-height: 24px;
+  color: #374151;
+}
+
+.selected-numbers .check {
+  color: #16a34a;
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+/* Joker Styles */
+.joker-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.joker-input {
+  text-align: center;
+  letter-spacing: 4px;
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.joker-input::placeholder {
+  letter-spacing: 2px;
+  font-size: 14px;
+}
+
+/* Preview Section */
+.preview-item {
+  font-size: 13px;
+  padding: 6px 0;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+}
+
+.preview-item:last-child {
+  border-bottom: none;
+}
+
+/* Price Box */
+.price-box {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 2px solid #e5e7eb;
+}
+
+.price-box div {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #4b5563;
+}
+
+.price-box span {
+  font-weight: bold;
+  color: #111;
+}
+
+/* Buttons */
+.btn-yellow {
+  background: linear-gradient(135deg, #facc15, #eab308);
+  border: none;
+  width: 100%;
+  padding: 14px;
+  font-weight: bold;
+  font-size: 16px;
+  color: #1f2937;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+}
+
+.btn-yellow:hover {
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(234, 179, 8, 0.4);
+}
+
+.btn-green {
+  background: linear-gradient(135deg, #84cc16, #65a30d);
+  border: none;
+  width: 100%;
+  padding: 14px;
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+}
+
+.btn-green:hover {
+  background: linear-gradient(135deg, #65a30d, #4d7c0f);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(132, 204, 22, 0.4);
+}
+
+/* Cart Styles */
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+
+/* Tablet and below */
+@media (max-width: 1024px) {
+  .ticket-wrapper {
+    flex-direction: column;
+  }
+  
+  .ticket-sidebar {
+    width: 100%;
+    position: static;
+    order: 2;
+  }
+  
+  .ticket-main {
+    order: 1;
+  }
+  
+  .number-grid {
+    grid-template-columns: repeat(10, 1fr);
+  }
+}
+
+/* Mobile landscape */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+  
+  .ticket-sidebar {
+    padding: 15px;
+    border-radius: 10px;
+  }
+  
+  .ticket-panel {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .ticket-header {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .ticket-header strong {
+    font-size: 14px;
+  }
+  
+  .ticket-header > div:last-child {
+    width: 100%;
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  
+  .ticket-header button {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 12px;
+    justify-content: center;
+  }
+  
+  .joker-row {
+    gap: 6px;
+  }
+  
+  .joker-input {
+    font-size: 14px;
+    letter-spacing: 2px;
+    padding: 10px 8px;
+  }
+  
+  .btn-yellow,
+  .btn-green {
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  .price-box div {
+    font-size: 12px;
+  }
+  
+  .number-grid {
+    grid-template-columns: repeat(9, 1fr);
+    gap: 2px;
+  }
+  
+  .number-cell {
+    font-size: 11px;
+    padding: 3px 1px;
+    min-height: 26px;
+  }
+}
+
+/* Mobile portrait */
+@media (max-width: 640px) {
+  .ticket-sidebar {
+    padding: 12px;
+  }
+  
+  .ticket-panel {
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .ticket-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  .ticket-header > div:last-child {
+    width: 100%;
+  }
+  
+  .number-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 2px;
+  }
+  
+  .number-cell {
+    font-size: 10px;
+    min-height: 24px;
+  }
+  
+  .joker-row {
+    gap: 4px;
+  }
+  
+  .joker-input {
+    font-size: 12px;
+    padding: 8px 6px;
+  }
+  
+  .btn-yellow,
+  .btn-green {
+    padding: 10px;
+    font-size: 13px;
+  }
+  
+  .game-card-header {
+    height: 100px;
+    padding: 15px;
+  }
+  
+  .game-card-header img {
+    height: 60px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  html {
+    font-size: 13px;
+  }
+  
+  .ticket-sidebar {
+    padding: 10px;
+  }
+  
+  .number-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2px;
+  }
+  
+  .number-cell {
+    font-size: 9px;
+    min-height: 22px;
+    padding: 2px 1px;
+  }
+  
+  .joker-input {
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 6px 4px;
+  }
+  
+  .btn-yellow,
+  .btn-green {
+    padding: 8px;
+    font-size: 12px;
+  }
+  
+  .ticket-header button {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  
+  .ticket-header button svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Extra small */
+@media (max-width: 360px) {
+  .number-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  
+  .number-cell {
+    font-size: 8px;
+    min-height: 20px;
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(to right, #f59e0b, #ea580c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-gradient {
+  background: linear-gradient(135deg, #f59e0b, #ea580c, #ef4444);
+}
+
+.card-orange {
+  background: linear-gradient(135deg, #fb923c, #ea580c);
+}
+
+.card-green {
+  background: linear-gradient(135deg, #34d399, #10b981);
+}
+
+.card-blue {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+}
+
+.card-red {
+  background: linear-gradient(135deg, #ef4444, #ea580c);
+}
+
+.card-top-bar {
+  background: linear-gradient(to right, #fbbf24, #ea580c, #ef4444);
+  height: 8px;
+}
+
+.icon-circle {
+  background: rgba(255,255,255,0.2);
+  padding: 12px;
+  border-radius: 12px;
+  display: inline-flex;
+}
+
+.game-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+}
+
+.logo-box {
+  background: linear-gradient(135deg, #fbbf24, #ea580c);
+  border-radius: 12px;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

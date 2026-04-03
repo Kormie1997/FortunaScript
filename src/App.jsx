@@ -1,0 +1,262 @@
+import { useState, useEffect } from 'react';
+import './App.css';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import HomePage from './pages/HomePage';
+import AccountPage from './pages/AccountPage';
+import AdminPage from './pages/AdminPage';
+import LotteryTicket from './components/LotteryTicket';
+import Navigation from './components/Navigation';
+import Cart from './components/Cart';
+import { Toaster, toast } from 'sonner';
+
+const API_BASE_URL = '/api';
+
+function App() {
+  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentView, setCurrentView] = useState('home');
+  const [selectedGame, setSelectedGame] = useState(null);
+  const [showRegister, setShowRegister] = useState(false);
+  const [cart, setCart] = useState([]);
+  const [showCart, setShowCart] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const savedUser = localStorage.getItem('user');
+    const savedCart = localStorage.getItem('cart');
+    
+    if (token && savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+        setIsAuthenticated(true);
+      } catch {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
+    }
+    
+    if (savedCart) {
+      try {
+        setCart(JSON.parse(savedCart));
+      } catch {
+        localStorage.removeItem('cart');
+      }
+    }
+    
+    setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
+
+  const login = async (credentials) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Hibás felhasználónév vagy jelszó');
+      }
+
+      const data = await response.json();
+      setUser(data.user);
+      setIsAuthenticated(true);
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      toast.success('Sikeres bejelentkezés!');
+      return true;
+    } catch (err) {
+      toast.error(err.message || 'Bejelentkezési hiba történt');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const register = async (credentials) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Regisztrációs hiba');
+      }
+
+      const data = await response.json();
+      toast.success(data.message || 'Sikeres regisztráció!');
+      return true;
+    } catch (err) {
+      toast.error(err.message || 'Regisztrációs hiba történt');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = () => {
+    setUser(null);
+    setIsAuthenticated(false);
+    setCart([]);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('cart');
+    setCurrentView('home');
+    toast.info('Sikeres kijelentkezés!');
+  };
+
+  const addToCart = (item) => {
+    setCart(prev => {
+      const existingIndex = prev.findIndex(
+        i => i.gameId === item.gameId && 
+             i.type === item.type && 
+             JSON.stringify(i.numbers) === JSON.stringify(item.numbers)
+      );
+      
+      if (existingIndex >= 0) {
+        const updated = [...prev];
+        updated[existingIndex].quantity += item.quantity;
+        toast.success('Mennyiség frissítve!');
+        return updated;
+      } else {
+        toast.success('Hozzáadva a kosárhoz!');
+        return [...prev, { ...item, id: Date.now() }];
+      }
+    });
+  };
+
+  const removeFromCart = (index) => {
+    setCart(prev => {
+      const updated = [...prev];
+      updated.splice(index, 1);
+      toast.info('Eltávolítva a kosárból');
+      return updated;
+    });
+  };
+
+  const clearCart = () => {
+    setCart([]);
+    toast.info('Kosár kiürítve');
+  };
+
+  const checkout = async () => {
+    const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    if (totalPrice > (user?.balance || 0)) {
+      throw new Error('Nincs elegendő egyenleg');
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    setUser(prev => ({
+      ...prev,
+      balance: (prev?.balance || 0) - totalPrice
+    }));
+    
+    setCart([]);
+    return true;
+  };
+
+  if (isLoading && !isAuthenticated) {
+    return (
+      <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+        <div className="spinner-border text-warning" role="status" style={{ width: '3rem', height: '3rem' }}>
+          <span className="visually-hidden">Betöltés...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    if (showRegister) {
+      return (
+        <>
+          <Toaster position="top-right" richColors />
+          <RegisterPage onLoginClick={() => setShowRegister(false)} onRegister={register} />
+        </>
+      );
+    }
+    return (
+      <>
+        <Toaster position="top-right" richColors />
+        <LoginPage onRegisterClick={() => setShowRegister(true)} onLogin={login} />
+      </>
+    );
+  }
+
+  const handleGameSelect = (game) => {
+    setSelectedGame(game);
+    setCurrentView('ticket');
+  };
+
+  const handleBackFromGame = () => {
+    setSelectedGame(null);
+    setCurrentView('home');
+  };
+
+  const renderView = () => {
+    switch (currentView) {
+      case 'home':
+        return <HomePage onGameSelect={handleGameSelect} user={user} />;
+      case 'ticket':
+        return selectedGame ? (
+          <LotteryTicket 
+            game={selectedGame} 
+            onBack={handleBackFromGame} 
+            user={user}
+            onAddToCart={addToCart}
+          />
+        ) : (
+          <HomePage onGameSelect={handleGameSelect} user={user} />
+        );
+      case 'account':
+        return <AccountPage user={user} onLogout={logout} />;
+      case 'admin':
+        return user?.roles?.includes('admin') ? <AdminPage user={user} /> : <HomePage onGameSelect={handleGameSelect} user={user} />;
+      default:
+        return <HomePage onGameSelect={handleGameSelect} user={user} />;
+    }
+  };
+
+  return (
+    <div className="min-vh-100 bg-light">
+      <Toaster position="top-right" richColors closeButton />
+      <Navigation 
+        user={user}
+        currentView={currentView === 'ticket' ? 'home' : currentView}
+        onViewChange={setCurrentView}
+        onLogout={logout}
+        cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
+        onCartClick={() => setShowCart(true)}
+      />
+      <main className="container py-4">
+        {renderView()}
+      </main>
+      
+      {showCart && (
+        <Cart 
+          cart={cart}
+          onClose={() => setShowCart(false)}
+          onRemove={removeFromCart}
+          onClear={clearCart}
+          onCheckout={checkout}
+          user={user}
+        />
+      )}
+    </div>
+  );
+}
+
+export default App;
