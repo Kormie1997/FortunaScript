@@ -21,7 +21,7 @@ function App() {
   const [showCart, setShowCart] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token     = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
     const savedCart = localStorage.getItem('cart');
 
@@ -54,6 +54,12 @@ function App() {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${localStorage.getItem('token')}`
   });
+
+  const handleBalanceUpdate = (newBalance) => {
+    const updatedUser = { ...user, balance: newBalance };
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
 
   const login = async (credentials) => {
     setIsLoading(true);
@@ -154,7 +160,6 @@ function App() {
     toast.info('Kosár kiürítve');
   };
 
-  //Api checkout
   const checkout = async () => {
     const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
@@ -183,15 +188,7 @@ function App() {
     }
 
     const data = await response.json();
-
-    //Egyenleg frissítése 
-    const updatedUser = {
-      ...user,
-      balance: data.newBalance ?? (user.balance - totalPrice)
-    };
-    setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-
+    handleBalanceUpdate(data.newBalance ?? (user.balance - totalPrice));
     setCart([]);
     return true;
   };
@@ -249,7 +246,13 @@ function App() {
           <HomePage onGameSelect={handleGameSelect} user={user} />
         );
       case 'account':
-        return <AccountPage user={user} onLogout={logout} />;
+        return (
+          <AccountPage
+            user={user}
+            onLogout={logout}
+            onBalanceUpdate={handleBalanceUpdate} 
+          />
+        );
       case 'admin':
         return user?.roles?.includes('admin')
           ? <AdminPage user={user} />

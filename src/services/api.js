@@ -59,6 +59,17 @@ const api = {
     getTickets:      () => api.request('/tickets/my'),
     getTransactions: () => api.request('/transactions/my'),
   },
+
+  balance: {
+    topup: (amount) => api.request('/balance/topup', {
+      method: 'POST',
+      body: JSON.stringify({ amount })
+    }),
+    adminTopup: (userId, amount) => api.request(`/balance/admin/topup/${userId}`, {
+      method: 'POST',
+      body: JSON.stringify({ amount })
+    }),
+  },
  
   //Szelvény vásárlás
   tickets: {
@@ -68,5 +79,7 @@ const api = {
     }),
   },
 };
+
+
  
 export default api;
