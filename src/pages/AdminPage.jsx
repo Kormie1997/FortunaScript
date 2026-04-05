@@ -28,12 +28,6 @@ const AdminPage = ({ user }) => {
   const loadAdminData = async () => {
     try {
       setLoading(true);
-      // const [statsData, usersData] = await Promise.all([
-      //   api.admin.getStats(),
-      //   api.admin.getUsers()
-      // ]);
-      // setStats(statsData);
-      // setUsers(usersData);
     } catch (err) {
       console.error(err);
       toast.error('Nem sikerült betölteni az admin adatokat');
@@ -112,12 +106,7 @@ const AdminPage = ({ user }) => {
             </Card.Body>
           </Card>
         </Col>
-        {/* További stat kártyák hasonlóan... */}
       </Row>
-
-      {/* A többi tab (users, tickets, settings) ugyanígy üresen várja az adatokat */}
-      {/* ... (a korábbi verzióból a users és settings rész maradhat, csak az adatok helyén loading vagy üres állapot) */}
-
       {loading && <p>Adatok betöltése...</p>}
     </Container>
   );

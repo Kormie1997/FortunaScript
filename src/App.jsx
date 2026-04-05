@@ -10,8 +10,6 @@ import Navigation from './components/Navigation';
 import Cart from './components/Cart';
 import { Toaster, toast } from 'sonner';
 
-const API_BASE_URL = '/api';
-
 function App() {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -26,7 +24,7 @@ function App() {
     const token = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
     const savedCart = localStorage.getItem('cart');
-    
+
     if (token && savedUser) {
       try {
         setUser(JSON.parse(savedUser));
@@ -36,7 +34,7 @@ function App() {
         localStorage.removeItem('user');
       }
     }
-    
+
     if (savedCart) {
       try {
         setCart(JSON.parse(savedCart));
@@ -44,7 +42,7 @@ function App() {
         localStorage.removeItem('cart');
       }
     }
-    
+
     setIsLoading(false);
   }, []);
 
@@ -52,10 +50,15 @@ function App() {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
+  const getAuthHeaders = () => ({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('token')}`
+  });
+
   const login = async (credentials) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials)
@@ -84,7 +87,7 @@ function App() {
   const register = async (credentials) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials)
@@ -120,11 +123,11 @@ function App() {
   const addToCart = (item) => {
     setCart(prev => {
       const existingIndex = prev.findIndex(
-        i => i.gameId === item.gameId && 
-             i.type === item.type && 
-             JSON.stringify(i.numbers) === JSON.stringify(item.numbers)
+        i => i.gameId === item.gameId &&
+          i.type === item.type &&
+          JSON.stringify(i.numbers) === JSON.stringify(item.numbers)
       );
-      
+
       if (existingIndex >= 0) {
         const updated = [...prev];
         updated[existingIndex].quantity += item.quantity;
@@ -141,9 +144,9 @@ function App() {
     setCart(prev => {
       const updated = [...prev];
       updated.splice(index, 1);
-      toast.info('Eltávolítva a kosárból');
       return updated;
     });
+    toast.info('Eltávolítva a kosárból');
   };
 
   const clearCart = () => {
@@ -151,20 +154,44 @@ function App() {
     toast.info('Kosár kiürítve');
   };
 
+  //Api checkout
   const checkout = async () => {
     const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    
+
     if (totalPrice > (user?.balance || 0)) {
       throw new Error('Nincs elegendő egyenleg');
     }
 
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setUser(prev => ({
-      ...prev,
-      balance: (prev?.balance || 0) - totalPrice
+    const tickets = cart.map(item => ({
+      gameId:   item.gameId,
+      gameName: item.gameName,
+      type:     item.type,
+      numbers:  item.numbers,
+      price:    item.price,
+      quantity: item.quantity
     }));
-    
+
+    const response = await fetch('/api/tickets/purchase', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ tickets })
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || 'Vásárlási hiba történt');
+    }
+
+    const data = await response.json();
+
+    //Egyenleg frissítése 
+    const updatedUser = {
+      ...user,
+      balance: data.newBalance ?? (user.balance - totalPrice)
+    };
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+
     setCart([]);
     return true;
   };
@@ -212,9 +239,9 @@ function App() {
         return <HomePage onGameSelect={handleGameSelect} user={user} />;
       case 'ticket':
         return selectedGame ? (
-          <LotteryTicket 
-            game={selectedGame} 
-            onBack={handleBackFromGame} 
+          <LotteryTicket
+            game={selectedGame}
+            onBack={handleBackFromGame}
             user={user}
             onAddToCart={addToCart}
           />
@@ -224,7 +251,9 @@ function App() {
       case 'account':
         return <AccountPage user={user} onLogout={logout} />;
       case 'admin':
-        return user?.roles?.includes('admin') ? <AdminPage user={user} /> : <HomePage onGameSelect={handleGameSelect} user={user} />;
+        return user?.roles?.includes('admin')
+          ? <AdminPage user={user} />
+          : <HomePage onGameSelect={handleGameSelect} user={user} />;
       default:
         return <HomePage onGameSelect={handleGameSelect} user={user} />;
     }
@@ -233,7 +262,7 @@ function App() {
   return (
     <div className="min-vh-100 bg-light">
       <Toaster position="top-right" richColors closeButton />
-      <Navigation 
+      <Navigation
         user={user}
         currentView={currentView === 'ticket' ? 'home' : currentView}
         onViewChange={setCurrentView}
@@ -244,9 +273,9 @@ function App() {
       <main className="container py-4">
         {renderView()}
       </main>
-      
+
       {showCart && (
-        <Cart 
+        <Cart
           cart={cart}
           onClose={() => setShowCart(false)}
           onRemove={removeFromCart}

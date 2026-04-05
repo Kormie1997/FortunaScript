@@ -10,9 +10,6 @@ const HomePage = ({ onGameSelect }) => {
   useEffect(() => {
     const loadGames = async () => {
       try {
-        // const data = await api.games.getAll();
-        // setGames(data);
-        // Dummy játék egyelőre, hogy ne legyen üres
         setGames([
         {
           id: 1,
