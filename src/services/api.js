@@ -39,6 +39,7 @@ const api = {
     getStats:   () => api.request('/admin/stats'),
     getUsers:   () => api.request('/admin/users'),
     getTickets: () => api.request('/admin/tickets'),
+    getDraws:   () => api.request('/admin/draws'),
     banUser:    (userId, isActive) => api.request(`/admin/users/${userId}/ban`, {
       method: 'PUT',
       body: JSON.stringify({ isActive })
