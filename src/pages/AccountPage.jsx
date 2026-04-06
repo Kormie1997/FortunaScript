@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Button, Tabs, Tab } from 'react-bootstrap';
 import { LogOut, User, Ticket, History, Settings, CreditCard, Edit3, Lock, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../services/api';
-import TopUpModal from '../components/TopUpModel';
+import PaymentModel from '../components/PaymentModel';
 
 const AccountPage = ({ user, onLogout, onBalanceUpdate }) => {
   const [activeTab, setActiveTab] = useState('tickets');
@@ -310,7 +310,7 @@ const AccountPage = ({ user, onLogout, onBalanceUpdate }) => {
         </Card.Body>
       </Card>
 
-      <TopUpModal
+       <PaymentModel
         show={showTopUp}
         onHide={() => setShowTopUp(false)}
         onSuccess={(newBalance) => onBalanceUpdate?.(newBalance)}
