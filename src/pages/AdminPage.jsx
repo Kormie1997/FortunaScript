@@ -3,13 +3,25 @@ import { Container, Row, Col, Card, Button, Badge, Tabs, Tab, Form, Spinner, Inp
 import { 
   Shield, Users, Ticket, TrendingUp, DollarSign, Search, Ban, CheckCircle, 
   BarChart3, Pause, RotateCcw, Database, AlertTriangle, Settings, RefreshCw, 
-  CreditCard, Activity, Calendar 
+  CreditCard, Activity, Calendar, Award 
 } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../services/api';
 
+// Játéktípus magyar neve
+const GAME_LABELS = {
+  Lottery5:     'Ötös Lottó',
+  Lottery6:     'Hatoslottó',
+  Scandinavian: 'Skandináv',
+  Eurojackpot:  'Eurojackpot',
+  Joker:        'Joker',
+  Keno:         'Kenó',
+};
+
+const MONTH_NAMES = ['Jan', 'Feb', 'Már', 'Ápr', 'Máj', 'Jún', 'Júl', 'Aug', 'Sze', 'Okt', 'Nov', 'Dec'];
+
 // Stat kártya komponens
-const StatCard = ({ title, value, sub, icon: Icon, gradient }) => (
+const StatCard = ({ title, value, sub, icon: Icon, gradient, delay = 0 }) => (
   <Card className="border-0 shadow-sm text-white h-100" style={{ background: gradient }}>
     <Card.Body>
       <div className="d-flex justify-content-between align-items-start">
@@ -30,9 +42,11 @@ const AdminPage = ({ user }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState([]);
+  const [tickets, setTickets] = useState([]);
   const [stats, setStats] = useState(null);
   const [loadingStats, setLoadingStats] = useState(true);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [loadingTickets, setLoadingTickets] = useState(false);
   
   // Admin feltöltés modal
   const [showTopUp, setShowTopUp] = useState(false);
@@ -45,17 +59,24 @@ const AdminPage = ({ user }) => {
     drawLocked: false,
   });
 
-  //STATISZTIKÁK
+  // ========== STATISZTIKÁK (bővítve) ==========
   useEffect(() => {
     if (activeTab === 'dashboard') {
       loadStats();
     }
   }, [activeTab]);
 
-  //FELHASZNÁLÓK
+  // ========== FELHASZNÁLÓK ==========
   useEffect(() => {
     if (activeTab === 'users') {
       loadUsers();
+    }
+  }, [activeTab]);
+
+  // ========== 3. FÁZIS: SZELVÉNYEK ==========
+  useEffect(() => {
+    if (activeTab === 'tickets') {
+      loadTickets();
     }
   }, [activeTab]);
 
@@ -85,7 +106,20 @@ const AdminPage = ({ user }) => {
     }
   };
 
-  //Tiltás / Feloldás
+  // ✅ 3. fázis: Szelvények betöltése
+  const loadTickets = async () => {
+    setLoadingTickets(true);
+    try {
+      const data = await api.admin.getTickets();
+      setTickets(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error(err);
+      toast.error('Nem sikerült betölteni a szelvényeket');
+    } finally {
+      setLoadingTickets(false);
+    }
+  };
+
   const handleBanUser = async (userId, currentStatus) => {
     try {
       await api.admin.banUser(userId, currentStatus === 'banned');
@@ -96,7 +130,6 @@ const AdminPage = ({ user }) => {
     }
   };
 
-  //Admin egyenleg feltöltés
   const handleAdminTopUp = async () => {
     const amount = parseInt(topUpAmount);
     if (!amount || amount <= 0) return toast.error('Adj meg érvényes összeget!');
@@ -144,7 +177,6 @@ const AdminPage = ({ user }) => {
     }
   };
 
-  // Szűrt felhasználók
   const filteredUsers = users.filter(u =>
     u.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     u.email?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -166,19 +198,19 @@ const AdminPage = ({ user }) => {
         <Badge bg="danger" className="fs-6 px-4 py-2">ADMIN</Badge>
       </div>
 
-      {/* Táblázatos nézet */}
       <Card className="shadow-sm border-0">
         <Card.Header className="bg-white border-0 pb-0">
           <Tabs activeKey={activeTab} onSelect={setActiveTab}>
             <Tab eventKey="dashboard" title={<span><BarChart3 size={16} className="me-1" />Áttekintés</span>} />
             <Tab eventKey="users"     title={<span><Users size={16} className="me-1" />Felhasználók</span>} />
+            <Tab eventKey="tickets"   title={<span><Ticket size={16} className="me-1" />Szelvények</span>} />
             <Tab eventKey="settings"  title={<span><Settings size={16} className="me-1" />Beállítások</span>} />
           </Tabs>
         </Card.Header>
 
         <Card.Body className="p-4">
 
-          {/* ── DASHBOARD (1. fázis) ── */}
+          {/* ── 3. FÁZIS: DASHBOARD (bővített statisztikákkal) ── */}
           {activeTab === 'dashboard' && (
             <>
               {loadingStats ? (
@@ -188,6 +220,7 @@ const AdminPage = ({ user }) => {
                 </div>
               ) : stats ? (
                 <>
+                  {/* Fő statisztika kártyák */}
                   <Row className="g-3 mb-4">
                     <Col md={3}>
                       <StatCard
@@ -227,6 +260,96 @@ const AdminPage = ({ user }) => {
                     </Col>
                   </Row>
 
+                  <Row className="g-4 mb-4">
+                    {/* ✅ Játékonkénti bontás (3. fázis új) */}
+                    <Col md={6}>
+                      <Card className="border-0 shadow-sm h-100">
+                        <Card.Header className="bg-white border-bottom">
+                          <h6 className="fw-bold mb-0">
+                            <Activity size={16} className="me-2 text-primary" />
+                            Játékonkénti statisztika
+                          </h6>
+                        </Card.Header>
+                        <Card.Body>
+                          {stats.gameStats?.length > 0 ? (
+                            <div className="d-flex flex-column gap-3">
+                              {stats.gameStats.map((g, i) => {
+                                const maxCount = Math.max(...stats.gameStats.map(x => x.count));
+                                const pct = maxCount > 0 ? (g.count / maxCount) * 100 : 0;
+                                return (
+                                  <div key={i}>
+                                    <div className="d-flex justify-content-between mb-1">
+                                      <span className="fw-medium small">{GAME_LABELS[g.gameType] || g.gameType}</span>
+                                      <div className="text-end">
+                                        <span className="small fw-bold">{g.count} szelvény</span>
+                                        <span className="text-muted small ms-2">{(g.revenue || 0).toLocaleString()} Ft</span>
+                                      </div>
+                                    </div>
+                                    <div className="progress" style={{ height: '8px' }}>
+                                      <div
+                                        className="progress-bar"
+                                        style={{
+                                          width: `${pct}%`,
+                                          background: 'linear-gradient(90deg, #f59e0b, #ea580c)'
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <p className="text-muted text-center py-3">Nincs adat</p>
+                          )}
+                        </Card.Body>
+                      </Card>
+                    </Col>
+
+                    {/* ✅ Havi bevétel bontás (3. fázis új) */}
+                    <Col md={6}>
+                      <Card className="border-0 shadow-sm h-100">
+                        <Card.Header className="bg-white border-bottom">
+                          <h6 className="fw-bold mb-0">
+                            <Calendar size={16} className="me-2 text-success" />
+                            Havi bevétel (utolsó 6 hónap)
+                          </h6>
+                        </Card.Header>
+                        <Card.Body>
+                          {stats.monthlyRevenue?.length > 0 ? (
+                            <div className="d-flex flex-column gap-3">
+                              {stats.monthlyRevenue.map((m, i) => {
+                                const maxRev = Math.max(...stats.monthlyRevenue.map(x => x.revenue));
+                                const pct = maxRev > 0 ? (m.revenue / maxRev) * 100 : 0;
+                                return (
+                                  <div key={i}>
+                                    <div className="d-flex justify-content-between mb-1">
+                                      <span className="fw-medium small">
+                                        {MONTH_NAMES[m.month - 1]} {m.year}
+                                      </span>
+                                      <div className="text-end">
+                                        <span className="small fw-bold">{(m.revenue || 0).toLocaleString()} Ft</span>
+                                        <span className="text-muted small ms-2">{m.count} tranzakció</span>
+                                      </div>
+                                    </div>
+                                    <div className="progress" style={{ height: '8px' }}>
+                                      <div
+                                        className="progress-bar bg-success"
+                                        style={{ width: `${pct}%` }}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <p className="text-muted text-center py-3">Nincs elég adat</p>
+                          )}
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  </Row>
+
+                  {/* Pénzügyi összesítő (bővítve) */}
                   <Row>
                     <Col md={12}>
                       <Card className="border-0 shadow-sm">
@@ -240,10 +363,11 @@ const AdminPage = ({ user }) => {
                           <Row className="g-3">
                             {[
                               { label: 'Összes bevétel', value: stats.totalRevenue, color: 'success' },
+                              { label: 'Havi bevétel', value: stats.monthRevenue, color: 'primary' },
                               { label: 'Kifizetett nyeremények', value: stats.totalPayouts, color: 'warning' },
                               { label: 'Rendszerben lévő Ft', value: stats.totalBalance, color: 'info' },
                             ].map((item, i) => (
-                              <Col md={4} key={i}>
+                              <Col md={3} key={i}>
                                 <div className={`border border-${item.color} rounded-3 p-3 text-center`}>
                                   <p className="text-muted small mb-1">{item.label}</p>
                                   <h5 className={`fw-bold text-${item.color} mb-0`}>
@@ -270,7 +394,7 @@ const AdminPage = ({ user }) => {
             </>
           )}
 
-          {/*FELHASZNÁLÓK*/}
+          {/* ── FELHASZNÁLÓK (2. fázis) ── */}
           {activeTab === 'users' && (
             <>
               <div className="d-flex justify-content-between align-items-center mb-3">
@@ -360,7 +484,60 @@ const AdminPage = ({ user }) => {
             </>
           )}
 
-          {/*BEÁLLÍTÁSOK*/}
+          {/* ── 3. FÁZIS: SZELVÉNYEK ── */}
+          {activeTab === 'tickets' && (
+            <>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h5 className="fw-bold mb-0">Összes szelvény</h5>
+                <Button variant="outline-secondary" size="sm" onClick={loadTickets}>
+                  <RefreshCw size={16} className="me-1" /> Frissítés
+                </Button>
+              </div>
+
+              {loadingTickets ? (
+                <div className="text-center py-5">
+                  <Spinner animation="border" variant="warning" />
+                  <p className="text-muted mt-2">Szelvények betöltése...</p>
+                </div>
+              ) : (
+                <div className="d-flex flex-column gap-2">
+                  {tickets.length === 0 ? (
+                    <div className="text-center py-5">
+                      <Ticket size={48} className="text-muted mb-3" />
+                      <p className="text-muted">Még nincsenek szelvények a rendszerben</p>
+                    </div>
+                  ) : (
+                    tickets.map(t => (
+                      <div key={t.id} className="border rounded-3 p-3 d-flex justify-content-between align-items-center">
+                        <div>
+                          <div className="d-flex align-items-center gap-2 mb-1">
+                            <span className="fw-bold text-primary small">{t.ticketCode}</span>
+                            <Badge bg={t.status === 'active' ? 'warning' : t.status === 'won' ? 'success' : 'secondary'} text={t.status === 'active' ? 'dark' : undefined}>
+                              {t.status === 'active' ? 'Aktív' : t.status === 'won' ? 'Nyertes 🎉' : 'Lejátszva'}
+                            </Badge>
+                          </div>
+                          <p className="text-muted small mb-0">
+                            👤 {t.username} · 🎮 {GAME_LABELS[t.gameType] || t.gameType} · 🔢 {t.fieldsNumbers || '-'}
+                          </p>
+                          <p className="text-muted small mb-0">
+                            📅 {new Date(t.boughtAt).toLocaleString('hu-HU')}
+                          </p>
+                        </div>
+                        <div className="text-end">
+                          <p className="fw-bold mb-0">{(t.totalPrice || 0).toLocaleString()} Ft</p>
+                          {t.totalWinAmount > 0 && (
+                            <p className="text-success small fw-bold mb-0">+{t.totalWinAmount.toLocaleString()} Ft</p>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* ── BEÁLLÍTÁSOK ── */}
           {activeTab === 'settings' && (
             <div className="d-flex flex-column gap-3">
               <h5 className="fw-bold mb-2">Rendszer beállítások</h5>
@@ -423,7 +600,7 @@ const AdminPage = ({ user }) => {
         </Card.Body>
       </Card>
 
-      {/*TopUp Modal*/}
+      {/* Admin TopUp Modal */}
       <Modal show={showTopUp} onHide={() => setShowTopUp(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title className="fw-bold">
