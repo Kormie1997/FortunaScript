@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Badge, Tabs, Tab, Form, Spinner } from 'react-bootstrap';
-import { Shield, Users, Ticket, TrendingUp, DollarSign, Search, Ban, CheckCircle, BarChart3, Pause, RotateCcw, Database, AlertTriangle, Settings, RefreshCw } from 'lucide-react';
+import { Container, Row, Col, Card, Button, Badge, Tabs, Tab, Form, Spinner, InputGroup, Modal } from 'react-bootstrap';
+import { 
+  Shield, Users, Ticket, TrendingUp, DollarSign, Search, Ban, CheckCircle, 
+  BarChart3, Pause, RotateCcw, Database, AlertTriangle, Settings, RefreshCw, 
+  CreditCard, Activity, Calendar 
+} from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../services/api';
 
@@ -29,19 +33,26 @@ const AdminPage = ({ user }) => {
   const [stats, setStats] = useState(null);
   const [loadingStats, setLoadingStats] = useState(true);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  
+  // Admin feltöltés modal
+  const [showTopUp, setShowTopUp] = useState(false);
+  const [topUpUser, setTopUpUser] = useState(null);
+  const [topUpAmount, setTopUpAmount] = useState('');
+  const [topUpLoading, setTopUpLoading] = useState(false);
+  
   const [systemStatus, setSystemStatus] = useState({
     maintenance: false,
     drawLocked: false,
   });
 
-  //Dashboard statisztikák
+  //STATISZTIKÁK
   useEffect(() => {
     if (activeTab === 'dashboard') {
       loadStats();
     }
   }, [activeTab]);
 
-  //Felhasználók betöltése
+  //FELHASZNÁLÓK
   useEffect(() => {
     if (activeTab === 'users') {
       loadUsers();
@@ -74,13 +85,33 @@ const AdminPage = ({ user }) => {
     }
   };
 
-  const handleBanUser = async (userId) => {
+  //Tiltás / Feloldás
+  const handleBanUser = async (userId, currentStatus) => {
     try {
-      await api.admin.banUser(userId);
-      toast.success('Felhasználó státusza megváltozott');
+      await api.admin.banUser(userId, currentStatus === 'banned');
+      toast.success(currentStatus === 'banned' ? 'Felhasználó feloldva!' : 'Felhasználó kitiltva!');
       loadUsers();
     } catch (err) {
       toast.error('Hiba a tiltás során');
+    }
+  };
+
+  //Admin egyenleg feltöltés
+  const handleAdminTopUp = async () => {
+    const amount = parseInt(topUpAmount);
+    if (!amount || amount <= 0) return toast.error('Adj meg érvényes összeget!');
+
+    setTopUpLoading(true);
+    try {
+      await api.admin.addBalance(topUpUser.id, amount);
+      toast.success(`${amount.toLocaleString()} Ft jóváírva ${topUpUser.username} fiókjára!`);
+      setShowTopUp(false);
+      setTopUpAmount('');
+      loadUsers();
+    } catch (err) {
+      toast.error('Feltöltés sikertelen');
+    } finally {
+      setTopUpLoading(false);
     }
   };
 
@@ -147,7 +178,7 @@ const AdminPage = ({ user }) => {
 
         <Card.Body className="p-4">
 
-          {/*DASHBOARD*/}
+          {/* ── DASHBOARD (1. fázis) ── */}
           {activeTab === 'dashboard' && (
             <>
               {loadingStats ? (
@@ -157,7 +188,6 @@ const AdminPage = ({ user }) => {
                 </div>
               ) : stats ? (
                 <>
-                  {/* Fő statisztika kártyák */}
                   <Row className="g-3 mb-4">
                     <Col md={3}>
                       <StatCard
@@ -197,7 +227,6 @@ const AdminPage = ({ user }) => {
                     </Col>
                   </Row>
 
-                  {/* Pénzügyi összesítő (kisebb részlet) */}
                   <Row>
                     <Col md={12}>
                       <Card className="border-0 shadow-sm">
@@ -210,9 +239,9 @@ const AdminPage = ({ user }) => {
                         <Card.Body>
                           <Row className="g-3">
                             {[
-                              { label: 'Összes bevétel',         value: stats.totalRevenue,  color: 'success' },
-                              { label: 'Kifizetett nyeremények', value: stats.totalPayouts,  color: 'warning' },
-                              { label: 'Rendszerben lévő Ft',    value: stats.totalBalance,  color: 'info' },
+                              { label: 'Összes bevétel', value: stats.totalRevenue, color: 'success' },
+                              { label: 'Kifizetett nyeremények', value: stats.totalPayouts, color: 'warning' },
+                              { label: 'Rendszerben lévő Ft', value: stats.totalBalance, color: 'info' },
                             ].map((item, i) => (
                               <Col md={4} key={i}>
                                 <div className={`border border-${item.color} rounded-3 p-3 text-center`}>
@@ -243,11 +272,92 @@ const AdminPage = ({ user }) => {
 
           {/*FELHASZNÁLÓK*/}
           {activeTab === 'users' && (
-            <div className="text-center py-5">
-              <Users size={48} className="text-muted mb-3" />
-              <p className="text-muted">Felhasználókezelés fejlesztés alatt...</p>
-              <small className="text-muted">(2. fázisban érkezik)</small>
-            </div>
+            <>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h5 className="fw-bold mb-0">Felhasználók kezelése</h5>
+                <div className="d-flex gap-2">
+                  <InputGroup style={{ width: '280px' }}>
+                    <InputGroup.Text><Search size={16} /></InputGroup.Text>
+                    <Form.Control
+                      placeholder="Keresés névre vagy emailre..."
+                      value={searchTerm}
+                      onChange={e => setSearchTerm(e.target.value)}
+                    />
+                  </InputGroup>
+                  <Button variant="outline-secondary" onClick={loadUsers} title="Frissítés">
+                    <RefreshCw size={16} />
+                  </Button>
+                </div>
+              </div>
+
+              {loadingUsers ? (
+                <div className="text-center py-5">
+                  <Spinner animation="border" variant="warning" />
+                  <p className="text-muted mt-2">Felhasználók betöltése...</p>
+                </div>
+              ) : (
+                <div className="d-flex flex-column gap-2">
+                  {filteredUsers.length === 0 ? (
+                    <div className="text-center py-5">
+                      <Users size={48} className="text-muted mb-3" />
+                      <p className="text-muted">Nincs találat a keresésre</p>
+                    </div>
+                  ) : (
+                    filteredUsers.map(u => (
+                      <div key={u.id} className="border rounded-3 p-3 d-flex justify-content-between align-items-center">
+                        <div className="d-flex align-items-center gap-3">
+                          <div
+                            className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
+                            style={{ width: '42px', height: '42px', background: 'linear-gradient(135deg, #f59e0b, #ea580c)', flexShrink: 0 }}
+                          >
+                            {u.username?.[0]?.toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="d-flex align-items-center gap-2">
+                              <span className="fw-medium">{u.username}</span>
+                              {u.roles?.includes('admin') && <Badge bg="danger" className="small">Admin</Badge>}
+                              {!u.emailConfirmed && <Badge bg="warning" text="dark" className="small">Email nem megerősített</Badge>}
+                            </div>
+                            <p className="text-muted small mb-0">{u.email}</p>
+                            <p className="text-muted small mb-0">
+                              Regisztráció: {new Date(u.createdAt).toLocaleDateString('hu-HU')}
+                              {u.lastLoginAt && ` · Utolsó belépés: ${new Date(u.lastLoginAt).toLocaleDateString('hu-HU')}`}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="d-flex align-items-center gap-3">
+                          <div className="text-end">
+                            <p className="fw-bold mb-0">{(u.balance || 0).toLocaleString()} Ft</p>
+                            <Badge bg={u.status === 'active' ? 'success' : 'danger'}>
+                              {u.status === 'active' ? 'Aktív' : 'Kitiltva'}
+                            </Badge>
+                          </div>
+                          <div className="d-flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline-success"
+                              onClick={() => { setTopUpUser(u); setShowTopUp(true); }}
+                              title="Egyenleg feltöltés"
+                            >
+                              <CreditCard size={14} />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant={u.status === 'banned' ? 'outline-success' : 'outline-danger'}
+                              onClick={() => handleBanUser(u.id, u.status)}
+                              title={u.status === 'banned' ? 'Feloldás' : 'Kitiltás'}
+                            >
+                              {u.status === 'banned' ? <CheckCircle size={14} /> : <Ban size={14} />}
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </>
           )}
 
           {/*BEÁLLÍTÁSOK*/}
@@ -312,6 +422,50 @@ const AdminPage = ({ user }) => {
 
         </Card.Body>
       </Card>
+
+      {/*TopUp Modal*/}
+      <Modal show={showTopUp} onHide={() => setShowTopUp(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title className="fw-bold">
+            <CreditCard size={20} className="me-2 text-success" />
+            Egyenleg feltöltés — {topUpUser?.username}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p className="text-muted small mb-3">
+            Jelenlegi egyenleg: <strong>{(topUpUser?.balance || 0).toLocaleString()} Ft</strong>
+          </p>
+          <div className="d-flex flex-wrap gap-2 mb-3">
+            {[1000, 5000, 10000, 20000, 50000].map(q => (
+              <Button 
+                key={q} 
+                size="sm" 
+                variant={topUpAmount === String(q) ? 'warning' : 'outline-secondary'}
+                onClick={() => setTopUpAmount(String(q))}
+              >
+                {q.toLocaleString()} Ft
+              </Button>
+            ))}
+          </div>
+          <InputGroup>
+            <Form.Control
+              type="number"
+              min={1}
+              placeholder="Egyéni összeg"
+              value={topUpAmount}
+              onChange={e => setTopUpAmount(e.target.value)}
+            />
+            <InputGroup.Text>Ft</InputGroup.Text>
+          </InputGroup>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-secondary" onClick={() => setShowTopUp(false)}>Mégse</Button>
+          <Button variant="success" className="fw-bold" onClick={handleAdminTopUp} disabled={topUpLoading}>
+            {topUpLoading ? <Spinner size="sm" animation="border" className="me-1" /> : <CreditCard size={16} className="me-1" />}
+            Jóváírás
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };
