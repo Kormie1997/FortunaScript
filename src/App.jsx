@@ -5,6 +5,7 @@ import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
 import AccountPage from './pages/AccountPage';
 import AdminPage from './pages/AdminPage';
+import ConfirmEmailPage from './pages/ConfirmEmailPage';
 import LotteryTicket from './components/LotteryTicket';
 import Navigation from './components/Navigation';
 import Cart from './components/Cart';
@@ -19,8 +20,17 @@ function App() {
   const [showRegister, setShowRegister] = useState(false);
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
+  const [isConfirmEmailRoute, setIsConfirmEmailRoute] = useState(false);
 
   useEffect(() => {
+    const path = window.location.pathname;
+    const search = window.location.search;
+    if (path === '/confirm-email' || search.includes('token=') && search.includes('userId=')) {
+      setIsConfirmEmailRoute(true);
+      setIsLoading(false);
+      return;
+    }
+
     const token     = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
     const savedCart = localStorage.getItem('cart');
@@ -184,7 +194,13 @@ function App() {
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      throw new Error(err.message || 'Vásárlási hiba történt');
+      //403-as hiba kezelés
+      if (response.status === 403) {
+        throw new Error('A fiókod ki van tiltva! Lépj kapcsolatba az adminnal.');
+      }
+      const error = new Error(err.message || 'Vásárlási hiba történt');
+      error.errors = err.errors;
+      throw error;
     }
 
     const data = await response.json();
@@ -192,6 +208,20 @@ function App() {
     setCart([]);
     return true;
   };
+
+  //Emailes oldal
+  if (isConfirmEmailRoute) {
+    return (
+      <>
+        <Toaster position="top-right" richColors />
+        <ConfirmEmailPage onGoToLogin={() => {
+          setIsConfirmEmailRoute(false);
+          // URL tisztítás
+          window.history.replaceState({}, '', '/');
+        }} />
+      </>
+    );
+  }
 
   if (isLoading && !isAuthenticated) {
     return (
@@ -250,7 +280,7 @@ function App() {
           <AccountPage
             user={user}
             onLogout={logout}
-            onBalanceUpdate={handleBalanceUpdate} 
+            onBalanceUpdate={handleBalanceUpdate}
           />
         );
       case 'admin':

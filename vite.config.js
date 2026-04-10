@@ -11,11 +11,12 @@ export default defineConfig({
     },
   },
   server: {
+    historyApiFallback: true,
     proxy: {
       '/api': {
         target: 'http://localhost:5168',
         changeOrigin: true,
-        secure: false, // ✅ HTTP-t is elfogad
+        secure: false,
         rewrite: (path) => path.replace(/^\/api/, '/api')
       }
     }
