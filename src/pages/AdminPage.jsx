@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Badge, Tabs, Tab, Form, Spinner, InputGroup, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Badge, Tabs, Tab, Form, Spinner, InputGroup, Modal, Alert } from 'react-bootstrap';
 import { 
   Shield, Users, Ticket, TrendingUp, DollarSign, Search, Ban, CheckCircle, 
   BarChart3, Pause, RotateCcw, Database, AlertTriangle, Settings, RefreshCw, 
-  CreditCard, Activity, Calendar, Award 
+  CreditCard, Activity, Calendar, Award, Play, Plus, Eye, ToggleLeft, ToggleRight, Zap
 } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../services/api';
 
-// Játéktípus magyar neve
+//Játéktípus magyar neve
 const GAME_LABELS = {
   Lottery5:     'Ötös Lottó',
   Lottery6:     'Hatoslottó',
@@ -58,15 +58,35 @@ const AdminPage = ({ user }) => {
     maintenance: false,
     drawLocked: false,
   });
+  const [draws, setDraws]                   = useState([]);
+  const [loadingDraws, setLoadingDraws]     = useState(false);
+  const [drawFilter, setDrawFilter]         = useState('all');
+  const [showCreateDraw, setShowCreateDraw] = useState(false);
+  const [executingDrawId, setExecutingDrawId] = useState(null);
+  const [newDraw, setNewDraw]               = useState({ gameType: 'Lottery5', drawDate: '', ticketPrice: 400 });
+  const [createLoading, setCreateLoading]   = useState(false);
+  const [showResults, setShowResults]     = useState(false);
+  const [drawResults, setDrawResults]     = useState(null);
+  const [loadingResults, setLoadingResults] = useState(false);
 
-  // ========== STATISZTIKÁK (bővítve) ==========
+  const GAME_COLORS = {
+  Lottery5: '#10b981', Lottery6: '#7c3aed', Scandinavian: '#1d4ed8',
+  Eurojackpot: '#ca8a04', Joker: '#dc2626', Keno: '#db2777',
+  };
+
+  const GAME_PRICES = {
+    Lottery5: 400, Lottery6: 250, Scandinavian: 200,
+    Eurojackpot: 750, Joker: 300, Keno: 100,
+  };
+
+  //STATISZTIKÁK
   useEffect(() => {
     if (activeTab === 'dashboard') {
       loadStats();
     }
   }, [activeTab]);
 
-  // ========== FELHASZNÁLÓK ==========
+  //FELHASZNÁLÓK
   useEffect(() => {
     if (activeTab === 'users') {
       loadUsers();
@@ -79,6 +99,14 @@ const AdminPage = ({ user }) => {
       loadTickets();
     }
   }, [activeTab]);
+
+  useEffect(() => {
+  if (activeTab === 'draws') loadDraws();
+  }, [activeTab]);
+
+  useEffect(() => {
+  if (activeTab === 'draws') loadDraws();
+  }, [drawFilter]);
 
   const loadStats = async () => {
     setLoadingStats(true);
@@ -106,7 +134,7 @@ const AdminPage = ({ user }) => {
     }
   };
 
-  // ✅ 3. fázis: Szelvények betöltése
+  //Szelvények betöltése
   const loadTickets = async () => {
     setLoadingTickets(true);
     try {
@@ -177,6 +205,83 @@ const AdminPage = ({ user }) => {
     }
   };
 
+  const loadDraws = async () => {
+  setLoadingDraws(true);
+  try {
+    const filters = drawFilter === 'active'
+      ? { isDrawn: false, isActive: true }
+      : drawFilter === 'completed'
+        ? { isDrawn: true }
+        : {};
+    const data = await api.draws.getAll(filters);
+    setDraws(Array.isArray(data) ? data : []);
+  } catch { toast.error('Nem sikerült betölteni a sorsolásokat'); }
+  finally { setLoadingDraws(false); }
+};
+
+const handleCreateDraw = async () => {
+  if (!newDraw.drawDate) return toast.error('Add meg a sorsolás dátumát!');
+  if (new Date(newDraw.drawDate) <= new Date()) return toast.error('A dátumnak jövőbelinek kell lennie!');
+
+  setCreateLoading(true);
+  try {
+    await api.draws.create({
+      gameType:    newDraw.gameType,
+      drawDate:    new Date(newDraw.drawDate).toISOString(),
+      ticketPrice: parseFloat(newDraw.ticketPrice)
+    });
+    toast.success('Sorsolás sikeresen létrehozva!');
+    setShowCreateDraw(false);
+    setNewDraw({ gameType: 'Lottery5', drawDate: '', ticketPrice: 400 });
+    loadDraws();
+  } catch (err) { toast.error(err.message || 'Hiba a létrehozás során'); }
+  finally { setCreateLoading(false); }
+};
+
+const handleToggleActive = async (drawId) => {
+  try {
+    await api.draws.toggleActive(drawId);
+    toast.success('Sorsolás státusza megváltozott!');
+    loadDraws();
+  } catch (err) { toast.error(err.message || 'Hiba'); }
+};
+
+const handleExecuteDraw = async (drawId, gameType) => {
+  const confirmed = window.confirm(
+    `Biztosan le akarod húzni a(z) ${GAME_LABELS[gameType] || gameType} sorsolást? Ez nem visszavonható!`
+  );
+  if (!confirmed) return;
+
+  setExecutingDrawId(drawId);
+  try {
+    const result = await api.draws.execute(drawId);
+    toast.success(`✅ Sorsolás kész! ${result.winnerCount} nyertes, ${(result.totalPayout || 0).toLocaleString()} Ft kiosztva.`);
+    loadDraws();
+    loadStats();
+  } catch (err) {
+    toast.error(err.message || 'Sorsolási hiba!');
+  } finally {
+    setExecutingDrawId(null);
+  }
+};
+
+  const isPastDue = (drawDate) => new Date(drawDate) <= new Date();
+
+  const handleViewResults = async (drawId) => {
+    setShowResults(true);
+    setDrawResults(null);
+    setLoadingResults(true);
+    try {
+      const data = await api.draws.getResults(drawId);
+      setDrawResults(data);
+    } catch (err) {
+      toast.error('Nem sikerült betölteni az eredményeket');
+      setShowResults(false);
+    } finally {
+      setLoadingResults(false);
+    }
+  };
+
   const filteredUsers = users.filter(u =>
     u.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     u.email?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -205,12 +310,13 @@ const AdminPage = ({ user }) => {
             <Tab eventKey="users"     title={<span><Users size={16} className="me-1" />Felhasználók</span>} />
             <Tab eventKey="tickets"   title={<span><Ticket size={16} className="me-1" />Szelvények</span>} />
             <Tab eventKey="settings"  title={<span><Settings size={16} className="me-1" />Beállítások</span>} />
+            <Tab eventKey="draws" title={<span><Zap size={16} className="me-1"/>Sorsolások</span>} />
           </Tabs>
         </Card.Header>
 
         <Card.Body className="p-4">
 
-          {/* ── 3. FÁZIS: DASHBOARD (bővített statisztikákkal) ── */}
+          {/*DASHBOARD*/}
           {activeTab === 'dashboard' && (
             <>
               {loadingStats ? (
@@ -220,7 +326,7 @@ const AdminPage = ({ user }) => {
                 </div>
               ) : stats ? (
                 <>
-                  {/* Fő statisztika kártyák */}
+                  {/*Fő statisztika kártyák*/}
                   <Row className="g-3 mb-4">
                     <Col md={3}>
                       <StatCard
@@ -261,7 +367,7 @@ const AdminPage = ({ user }) => {
                   </Row>
 
                   <Row className="g-4 mb-4">
-                    {/* ✅ Játékonkénti bontás (3. fázis új) */}
+                    {/*Játékonkénti bontás*/}
                     <Col md={6}>
                       <Card className="border-0 shadow-sm h-100">
                         <Card.Header className="bg-white border-bottom">
@@ -305,7 +411,7 @@ const AdminPage = ({ user }) => {
                       </Card>
                     </Col>
 
-                    {/* ✅ Havi bevétel bontás (3. fázis új) */}
+                    {/*Havi bevétel bontás*/}
                     <Col md={6}>
                       <Card className="border-0 shadow-sm h-100">
                         <Card.Header className="bg-white border-bottom">
@@ -349,7 +455,7 @@ const AdminPage = ({ user }) => {
                     </Col>
                   </Row>
 
-                  {/* Pénzügyi összesítő (bővítve) */}
+                  {/*Pénzügyi összesítő*/}
                   <Row>
                     <Col md={12}>
                       <Card className="border-0 shadow-sm">
@@ -394,7 +500,107 @@ const AdminPage = ({ user }) => {
             </>
           )}
 
-          {/* ── FELHASZNÁLÓK (2. fázis) ── */}
+          {/*SORSOLÁSOK TAB*/}
+          {activeTab === 'draws' && (
+            <>
+              <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h5 className="fw-bold mb-0">Sorsolások kezelése</h5>
+                <div className="d-flex gap-2 flex-wrap">
+                  {['all','active','completed'].map(f => (
+                    <Button key={f} size="sm"
+                      variant={drawFilter === f ? 'warning' : 'outline-secondary'}
+                      onClick={() => setDrawFilter(f)}>
+                      {f === 'all' ? 'Összes' : f === 'active' ? '🟢 Aktív' : '✅ Lezárt'}
+                    </Button>
+                  ))}
+                  <Button size="sm" variant="outline-secondary" onClick={loadDraws}>
+                    <RefreshCw size={14}/>
+                  </Button>
+                  <Button size="sm" variant="success" className="fw-bold"
+                    onClick={() => setShowCreateDraw(true)}>
+                    <Plus size={14} className="me-1"/> Új sorsolás
+                  </Button>
+                </div>
+              </div>
+
+              {loadingDraws ? (
+                <div className="text-center py-5"><Spinner animation="border" variant="warning"/></div>
+              ) : draws.length === 0 ? (
+                <div className="text-center py-5 text-muted">
+                  <Zap size={48} className="opacity-25 mb-3"/>
+                  <p>Nincs sorsolás</p>
+                </div>
+              ) : (
+                <div className="d-flex flex-column gap-3">
+                  {draws.map(draw => {
+                    const isExecuting = executingDrawId === draw.id;
+                    const canExecute  = !draw.isDrawn && draw.isActive && isPastDue(draw.drawDate);
+                    const color       = GAME_COLORS[draw.gameType] || '#6b7280';
+                    return (
+                      <div key={draw.id} className="border rounded-3 p-3">
+                        <div className="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                          <div className="d-flex align-items-center gap-3">
+                            <div className="rounded-3 p-2 text-white d-flex align-items-center justify-content-center"
+                              style={{ background: color, minWidth: '42px', height: '42px' }}>
+                              <Zap size={20}/>
+                            </div>
+                            <div>
+                              <div className="d-flex align-items-center gap-2 mb-1">
+                                <span className="fw-bold">{GAME_LABELS[draw.gameType] || draw.gameType}</span>
+                                <Badge bg={draw.isDrawn ? 'secondary' : draw.isActive ? 'success' : 'warning'}
+                                  text={!draw.isDrawn && !draw.isActive ? 'dark' : undefined}>
+                                  {draw.isDrawn ? 'Lezárva' : draw.isActive ? 'Aktív' : 'Inaktív'}
+                                </Badge>
+                                {canExecute && <Badge bg="danger">⚡ Sorsolható!</Badge>}
+                              </div>
+                              <p className="text-muted small mb-0">
+                                📅 {new Date(draw.drawDate).toLocaleString('hu-HU')}
+                                {' · '}💰 {draw.ticketPrice} Ft/szelvény
+                                {' · '}🎟️ {draw.ticketCount || 0} szelvény
+                              </p>
+                              {draw.isDrawn && draw.winningNumbers && (
+                                <p className="small mb-0 mt-1">
+                                  🏆 Nyerőszámok: <strong className="text-success">{draw.winningNumbers}</strong>
+                                  {' · '}Kifizetés: <strong>{(draw.totalPayout||0).toLocaleString()} Ft</strong>
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="d-flex gap-2 align-items-center flex-wrap">
+                            {!draw.isDrawn && (
+                              <Button size="sm"
+                                variant={draw.isActive ? 'outline-warning' : 'outline-success'}
+                                onClick={() => handleToggleActive(draw.id)}>
+                                {draw.isActive ? <ToggleRight size={16}/> : <ToggleLeft size={16}/>}
+                                {draw.isActive ? ' Deaktivál' : ' Aktivál'}
+                              </Button>
+                            )}
+                            {canExecute && (
+                              <Button size="sm" variant="danger" className="fw-bold"
+                                onClick={() => handleExecuteDraw(draw.id, draw.gameType)}
+                                disabled={isExecuting}>
+                                {isExecuting
+                                  ? <><Spinner size="sm" animation="border" className="me-1"/>Sorsolás...</>
+                                  : <><Play size={14} className="me-1"/>Sorsolás indítása</>}
+                              </Button> 
+                            )}
+                            {draw.isDrawn && (
+                            <Button size="sm" variant="outline-primary"
+                              onClick={() => handleViewResults(draw.id)}>
+                              <Eye size={14} className="me-1"/> Eredmények
+                            </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
+          {/*FELHASZNÁLÓK*/}
           {activeTab === 'users' && (
             <>
               <div className="d-flex justify-content-between align-items-center mb-3">
@@ -484,7 +690,7 @@ const AdminPage = ({ user }) => {
             </>
           )}
 
-          {/* ── 3. FÁZIS: SZELVÉNYEK ── */}
+          {/*SZELVÉNYEK*/}
           {activeTab === 'tickets' && (
             <>
               <div className="d-flex justify-content-between align-items-center mb-3">
@@ -537,7 +743,7 @@ const AdminPage = ({ user }) => {
             </>
           )}
 
-          {/* ── BEÁLLÍTÁSOK ── */}
+          {/*BEÁLLÍTÁSOK*/}
           {activeTab === 'settings' && (
             <div className="d-flex flex-column gap-3">
               <h5 className="fw-bold mb-2">Rendszer beállítások</h5>
@@ -600,7 +806,7 @@ const AdminPage = ({ user }) => {
         </Card.Body>
       </Card>
 
-      {/* Admin TopUp Modal */}
+      {/*Admin TopUp Modal*/}
       <Modal show={showTopUp} onHide={() => setShowTopUp(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title className="fw-bold">
@@ -643,6 +849,140 @@ const AdminPage = ({ user }) => {
           </Button>
         </Modal.Footer>
       </Modal>
+      {/*Új sorsolás Modal*/}
+      <Modal show={showCreateDraw} onHide={() => setShowCreateDraw(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title className="fw-bold">
+            <Plus size={20} className="me-2 text-success"/>Új sorsolás
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-medium small">Játéktípus</Form.Label>
+            <Form.Select value={newDraw.gameType}
+              onChange={e => setNewDraw(p => ({
+                ...p, gameType: e.target.value,
+                ticketPrice: GAME_PRICES[e.target.value] || 400
+              }))}>
+              {Object.entries(GAME_LABELS).map(([key, label]) => (
+                <option key={key} value={key}>{label}</option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-medium small">Sorsolás dátuma</Form.Label>
+            <Form.Control type="datetime-local" value={newDraw.drawDate}
+              min={new Date(Date.now() + 60*60*1000).toISOString().slice(0,16)}
+              onChange={e => setNewDraw(p => ({ ...p, drawDate: e.target.value }))}/>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-medium small">Szelvény ára</Form.Label>
+            <InputGroup>
+              <Form.Control type="number" min={1} value={newDraw.ticketPrice}
+                onChange={e => setNewDraw(p => ({ ...p, ticketPrice: e.target.value }))}/>
+              <InputGroup.Text>Ft</InputGroup.Text>
+            </InputGroup>
+          </Form.Group>
+
+          <Alert variant="info" className="small mb-0">
+            ℹ️ Létrehozás után aktiválni kell hogy lehessen rá szelvényt venni.
+          </Alert>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-secondary" onClick={() => setShowCreateDraw(false)}>Mégse</Button>
+          <Button variant="success" className="fw-bold" onClick={handleCreateDraw} disabled={createLoading}>
+            {createLoading
+              ? <Spinner size="sm" animation="border" className="me-1"/>
+              : <Plus size={16} className="me-1"/>}
+            Létrehozás
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/*Eredmények Modal*/}
+    <Modal show={showResults} onHide={() => setShowResults(false)} centered size="lg">
+      <Modal.Header closeButton>
+        <Modal.Title className="fw-bold">
+          <Trophy size={20} className="me-2 text-warning"/>
+          Sorsolás eredményei
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {loadingResults ? (
+          <div className="text-center py-4">
+            <Spinner animation="border" variant="warning"/>
+          </div>
+        ) : drawResults ? (
+          <>
+            {/* Összefoglaló */}
+            <div className="p-3 rounded-3 mb-4" style={{ background: 'linear-gradient(135deg, #fef3c7, #fff7ed)' }}>
+              <Row className="g-3 text-center">
+                <Col xs={6} md={3}>
+                  <p className="text-muted small mb-1">Játék</p>
+                  <p className="fw-bold mb-0">{GAME_LABELS[drawResults.gameType] || drawResults.gameType}</p>
+                </Col>
+                <Col xs={6} md={3}>
+                  <p className="text-muted small mb-1">Nyerőszámok</p>
+                  <p className="fw-bold mb-0 text-success">{drawResults.winningNumbers}</p>
+                </Col>
+                <Col xs={6} md={3}>
+                  <p className="text-muted small mb-1">Összes szelvény</p>
+                  <p className="fw-bold mb-0">{drawResults.totalTickets}</p>
+                </Col>
+                <Col xs={6} md={3}>
+                  <p className="text-muted small mb-1">Kifizetés</p>
+                  <p className="fw-bold mb-0 text-danger">{(drawResults.totalPayout || 0).toLocaleString()} Ft</p>
+                </Col>
+              </Row>
+            </div>
+
+            {/* Nyertesek */}
+            <h6 className="fw-bold mb-3">
+              🏆 Nyertesek ({drawResults.winnerCount})
+            </h6>
+            {drawResults.winners?.length > 0 ? (
+              <div className="d-flex flex-column gap-2">
+                {drawResults.winners.map((w, i) => (
+                  <div key={i} className="border border-success rounded-3 p-3 d-flex justify-content-between align-items-center">
+                    <div>
+                      <div className="d-flex align-items-center gap-2 mb-1">
+                        <span className="fw-bold text-success">#{i + 1}</span>
+                        <span className="fw-medium">👤 {w.username}</span>
+                        <span className="text-muted small">{w.ticketCode}</span>
+                      </div>
+                      <p className="text-muted small mb-0">
+                        🔢 Számok: <strong>{w.fieldsNumbers}</strong>
+                        {' · '}
+                        🎯 Találat: <strong>{w.matchesNumbers}</strong>
+                      </p>
+                    </div>
+                    <div className="text-end">
+                      <p className="fw-bold text-success fs-5 mb-0">
+                        +{(w.totalWinAmount || 0).toLocaleString()} Ft
+                      </p>
+                      <small className="text-muted">
+                        {w.isPaidOut ? '✅ Kifizetve' : '⏳ Folyamatban'}
+                      </small>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-4 text-muted">
+                <Trophy size={40} className="opacity-25 mb-2"/>
+                <p>Ennél a sorsolásnál nem volt nyertes</p>
+              </div>
+            )}
+          </>
+        ) : null}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="outline-secondary" onClick={() => setShowResults(false)}>
+          Bezárás
+        </Button>
+      </Modal.Footer>
+    </Modal>
     </Container>
   );
 };
