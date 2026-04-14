@@ -3,10 +3,11 @@ import { Container, Row, Col, Card, Button, Badge, Tabs, Tab, Form, Spinner, Inp
 import { 
   Shield, Users, Ticket, TrendingUp, DollarSign, Search, Ban, CheckCircle, 
   BarChart3, Pause, RotateCcw, Database, AlertTriangle, Settings, RefreshCw, 
-  CreditCard, Activity, Calendar, Award, Play, Plus, Eye, ToggleLeft, ToggleRight, Zap
+  CreditCard, Activity, Calendar, Award, Play, Plus, Eye, ToggleLeft, ToggleRight, Zap, Trophy
 } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../services/api';
+
 
 //Játéktípus magyar neve
 const GAME_LABELS = {
