@@ -6,27 +6,35 @@ import HomePage from './pages/HomePage';
 import AccountPage from './pages/AccountPage';
 import AdminPage from './pages/AdminPage';
 import ConfirmEmailPage from './pages/ConfirmEmailPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import LotteryTicket from './components/LotteryTicket';
 import Navigation from './components/Navigation';
 import Cart from './components/Cart';
 import { Toaster, toast } from 'sonner';
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser]                   = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentView, setCurrentView] = useState('home');
-  const [selectedGame, setSelectedGame] = useState(null);
-  const [showRegister, setShowRegister] = useState(false);
-  const [cart, setCart] = useState([]);
-  const [showCart, setShowCart] = useState(false);
-  const [isConfirmEmailRoute, setIsConfirmEmailRoute] = useState(false);
+  const [isLoading, setIsLoading]         = useState(true);
+  const [currentView, setCurrentView]     = useState('home');
+  const [selectedGame, setSelectedGame]   = useState(null);
+  const [showRegister, setShowRegister]   = useState(false);
+  const [cart, setCart]                   = useState([]);
+  const [showCart, setShowCart]           = useState(false);
+  const [specialRoute, setSpecialRoute]   = useState(null);
 
   useEffect(() => {
-    const path = window.location.pathname;
+    const path   = window.location.pathname;
     const search = window.location.search;
-    if (path === '/confirm-email' || search.includes('token=') && search.includes('userId=')) {
-      setIsConfirmEmailRoute(true);
+
+    if (path === '/confirm-email') {
+      setSpecialRoute('confirm-email');
+      setIsLoading(false);
+      return;
+    }
+
+    if (path === '/reset-password') {
+      setSpecialRoute('reset-password');
       setIsLoading(false);
       return;
     }
@@ -46,11 +54,8 @@ function App() {
     }
 
     if (savedCart) {
-      try {
-        setCart(JSON.parse(savedCart));
-      } catch {
-        localStorage.removeItem('cart');
-      }
+      try { setCart(JSON.parse(savedCart)); }
+      catch { localStorage.removeItem('cart'); }
     }
 
     setIsLoading(false);
@@ -59,6 +64,11 @@ function App() {
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
+
+  const goToLogin = () => {
+    setSpecialRoute(null);
+    window.history.replaceState({}, '', '/');
+  };
 
   const getAuthHeaders = () => ({
     'Content-Type': 'application/json',
@@ -80,20 +90,15 @@ function App() {
         body: JSON.stringify(credentials)
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Hibás felhasználónév vagy jelszó');
-      }
+      if (!response.ok) return false;
 
       const data = await response.json();
       setUser(data.user);
       setIsAuthenticated(true);
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
-      toast.success('Sikeres bejelentkezés!');
       return true;
-    } catch (err) {
-      toast.error(err.message || 'Bejelentkezési hiba történt');
+    } catch {
       return false;
     } finally {
       setIsLoading(false);
@@ -114,8 +119,6 @@ function App() {
         throw new Error(errorData.message || 'Regisztrációs hiba');
       }
 
-      const data = await response.json();
-      toast.success(data.message || 'Sikeres regisztráció!');
       return true;
     } catch (err) {
       toast.error(err.message || 'Regisztrációs hiba történt');
@@ -143,47 +146,31 @@ function App() {
           i.type === item.type &&
           JSON.stringify(i.numbers) === JSON.stringify(item.numbers)
       );
-
       if (existingIndex >= 0) {
         const updated = [...prev];
         updated[existingIndex].quantity += item.quantity;
         toast.success('Mennyiség frissítve!');
         return updated;
-      } else {
-        toast.success('Hozzáadva a kosárhoz!');
-        return [...prev, { ...item, id: Date.now() }];
       }
+      toast.success('Hozzáadva a kosárhoz!');
+      return [...prev, { ...item, id: Date.now() }];
     });
   };
 
   const removeFromCart = (index) => {
-    setCart(prev => {
-      const updated = [...prev];
-      updated.splice(index, 1);
-      return updated;
-    });
+    setCart(prev => { const u = [...prev]; u.splice(index, 1); return u; });
     toast.info('Eltávolítva a kosárból');
   };
 
-  const clearCart = () => {
-    setCart([]);
-    toast.info('Kosár kiürítve');
-  };
+  const clearCart = () => { setCart([]); toast.info('Kosár kiürítve'); };
 
   const checkout = async () => {
     const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-    if (totalPrice > (user?.balance || 0)) {
-      throw new Error('Nincs elegendő egyenleg');
-    }
+    if (totalPrice > (user?.balance || 0)) throw new Error('Nincs elegendő egyenleg');
 
     const tickets = cart.map(item => ({
-      gameId:   item.gameId,
-      gameName: item.gameName,
-      type:     item.type,
-      numbers:  item.numbers,
-      price:    item.price,
-      quantity: item.quantity
+      gameId: item.gameId, gameName: item.gameName, type: item.type,
+      numbers: item.numbers, price: item.price, quantity: item.quantity
     }));
 
     const response = await fetch('/api/tickets/purchase', {
@@ -194,10 +181,7 @@ function App() {
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      //403-as hiba kezelés
-      if (response.status === 403) {
-        throw new Error('A fiókod ki van tiltva! Lépj kapcsolatba az adminnal.');
-      }
+      if (response.status === 403) throw new Error('A fiókod ki van tiltva! Lépj kapcsolatba az adminnal.');
       const error = new Error(err.message || 'Vásárlási hiba történt');
       error.errors = err.errors;
       throw error;
@@ -209,16 +193,21 @@ function App() {
     return true;
   };
 
-  //Emailes oldal
-  if (isConfirmEmailRoute) {
+  // ✅ Speciális route-ok
+  if (specialRoute === 'confirm-email') {
     return (
       <>
         <Toaster position="top-right" richColors />
-        <ConfirmEmailPage onGoToLogin={() => {
-          setIsConfirmEmailRoute(false);
-          // URL tisztítás
-          window.history.replaceState({}, '', '/');
-        }} />
+        <ConfirmEmailPage onGoToLogin={goToLogin} />
+      </>
+    );
+  }
+
+  if (specialRoute === 'reset-password') {
+    return (
+      <>
+        <Toaster position="top-right" richColors />
+        <ResetPasswordPage onGoToLogin={goToLogin} />
       </>
     );
   }
@@ -250,45 +239,20 @@ function App() {
     );
   }
 
-  const handleGameSelect = (game) => {
-    setSelectedGame(game);
-    setCurrentView('ticket');
-  };
-
-  const handleBackFromGame = () => {
-    setSelectedGame(null);
-    setCurrentView('home');
-  };
+  const handleGameSelect = (game) => { setSelectedGame(game); setCurrentView('ticket'); };
+  const handleBackFromGame = () => { setSelectedGame(null); setCurrentView('home'); };
 
   const renderView = () => {
     switch (currentView) {
-      case 'home':
-        return <HomePage onGameSelect={handleGameSelect} user={user} />;
-      case 'ticket':
-        return selectedGame ? (
-          <LotteryTicket
-            game={selectedGame}
-            onBack={handleBackFromGame}
-            user={user}
-            onAddToCart={addToCart}
-          />
-        ) : (
-          <HomePage onGameSelect={handleGameSelect} user={user} />
-        );
-      case 'account':
-        return (
-          <AccountPage
-            user={user}
-            onLogout={logout}
-            onBalanceUpdate={handleBalanceUpdate}
-          />
-        );
-      case 'admin':
-        return user?.roles?.includes('admin')
-          ? <AdminPage user={user} />
-          : <HomePage onGameSelect={handleGameSelect} user={user} />;
-      default:
-        return <HomePage onGameSelect={handleGameSelect} user={user} />;
+      case 'home':    return <HomePage onGameSelect={handleGameSelect} user={user} />;
+      case 'ticket':  return selectedGame
+        ? <LotteryTicket game={selectedGame} onBack={handleBackFromGame} user={user} onAddToCart={addToCart} />
+        : <HomePage onGameSelect={handleGameSelect} user={user} />;
+      case 'account': return <AccountPage user={user} onLogout={logout} onBalanceUpdate={handleBalanceUpdate} />;
+      case 'admin':   return user?.roles?.includes('admin')
+        ? <AdminPage user={user} />
+        : <HomePage onGameSelect={handleGameSelect} user={user} />;
+      default:        return <HomePage onGameSelect={handleGameSelect} user={user} />;
     }
   };
 
@@ -303,19 +267,12 @@ function App() {
         cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
         onCartClick={() => setShowCart(true)}
       />
-      <main className="container py-4">
-        {renderView()}
-      </main>
+      <main className="container py-4">{renderView()}</main>  
 
       {showCart && (
-        <Cart
-          cart={cart}
-          onClose={() => setShowCart(false)}
-          onRemove={removeFromCart}
-          onClear={clearCart}
-          onCheckout={checkout}
-          user={user}
-        />
+        <Cart cart={cart} onClose={() => setShowCart(false)}
+          onRemove={removeFromCart} onClear={clearCart}
+          onCheckout={checkout} user={user} />
       )}
     </div>
   );

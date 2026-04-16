@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
-import { User, Lock, Mail, ArrowLeft, Sparkles, Loader2, Gem } from 'lucide-react';
+import { useState } from 'react';
+import { Container, Row, Col, Card, Form, Button, Modal } from 'react-bootstrap';
+import { User, Lock, Mail, ArrowLeft, Sparkles, Loader2, Gem, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 const LoginPage = ({ onRegisterClick, onLogin }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [showForgot, setShowForgot] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [username, setUsername]         = useState('');
+  const [password, setPassword]         = useState('');
+  const [showForgot, setShowForgot]     = useState(false);
+  const [forgotEmail, setForgotEmail]   = useState('');
+  const [forgotSent, setForgotSent]     = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [isLoading, setIsLoading]       = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,23 +19,50 @@ const LoginPage = ({ onRegisterClick, onLogin }) => {
       return;
     }
     setIsLoading(true);
-    await onLogin({ username, password });
+    const success = await onLogin({ username, password });
+    if (success) {
+      toast.success('Sikeres belépés! Üdv újra! 👋');
+    } else {
+      toast.error('Hibás felhasználónév vagy jelszó!');
+    }
     setIsLoading(false);
   };
 
-  const handleForgot = (e) => {
+  const handleForgot = async (e) => {
     e.preventDefault();
     if (!forgotEmail) return toast.error('Add meg az email címed!');
-    toast.success('Jelszó-visszaállítási link elküldve!');
+    setForgotLoading(true);
+    try {
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: forgotEmail })
+      });
+      if (response.ok) {
+        setForgotSent(true);
+      } else {
+        toast.error('Hiba történt, próbáld újra!');
+      }
+    } catch {
+      toast.error('Szerverhiba, próbáld újra később!');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const closeForgot = () => {
     setShowForgot(false);
+    setForgotSent(false);
+    setForgotEmail('');
   };
 
   return (
-    <div className="min-vh-100 d-flex align-items-center bg-light">
+    <div className="min-vh-100 d-flex align-items-center" style={{ background: 'linear-gradient(135deg, #fff7ed, #ffedd5, #fef9c3)' }}>
       <Container>
         <Row className="justify-content-center">
           <Col md={8} lg={5}>
-            <div className="text-center mb-5">
+            {/* Logo */}
+            <div className="text-center mb-4">
               <div className="logo-box mx-auto mb-3">
                 <Gem size={40} color="white" />
               </div>
@@ -42,69 +71,74 @@ const LoginPage = ({ onRegisterClick, onLogin }) => {
                 <span className="text-dark"> Lotto</span>
               </h1>
               <p className="text-muted d-flex align-items-center justify-content-center gap-2">
-                <Sparkles size={18} /> A szerencse hozzád szól! <Sparkles size={18} />
+                <Sparkles size={16} className="text-warning" />
+                A szerencse hozzád szól!
+                <Sparkles size={16} className="text-warning" />
               </p>
             </div>
 
-            <Card className="border-0 rounded-4 overflow-hidden shadow">
-              <div className="card-top-bar"></div>
-              <Card.Body className="p-5">
-                <h3 className="text-center mb-1">Bejelentkezés</h3>
-                <p className="text-center text-muted mb-4">Add meg a felhasználóneved és jelszavad</p>
+            {/* Kártya */}
+            <Card className="border-0 rounded-4 overflow-hidden shadow-lg">
+              <div className="card-top-bar" />
+              <Card.Body className="p-4 p-md-5">
+                <h3 className="text-center fw-bold mb-1">Bejelentkezés</h3>
+                <p className="text-center text-muted mb-4 small">Add meg a felhasználóneved és jelszavad</p>
 
                 <Form onSubmit={handleSubmit}>
                   <Form.Group className="mb-3">
-                    <Form.Label>Felhasználónév</Form.Label>
+                    <Form.Label className="fw-medium small">Felhasználónév</Form.Label>
                     <div className="input-group">
-                      <span className="input-group-text"><User size={18} /></span>
+                      <span className="input-group-text bg-light border-end-0">
+                        <User size={16} className="text-muted" />
+                      </span>
                       <Form.Control
                         type="text"
                         placeholder="felhasznalonev"
+                        className="border-start-0 ps-0"
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={e => setUsername(e.target.value)}
                         disabled={isLoading}
+                        autoComplete="username"
                       />
                     </div>
                   </Form.Group>
 
                   <Form.Group className="mb-4">
-                    <div className="d-flex justify-content-between">
-                      <Form.Label>Jelszó</Form.Label>
-                      <Button variant="link" className="p-0 text-warning" onClick={() => setShowForgot(true)}>
+                    <div className="d-flex justify-content-between align-items-center mb-1">
+                      <Form.Label className="fw-medium small mb-0">Jelszó</Form.Label>
+                      <Button variant="link" className="p-0 text-warning small text-decoration-none"
+                        onClick={() => setShowForgot(true)}>
                         Elfelejtetted?
                       </Button>
                     </div>
                     <div className="input-group">
-                      <span className="input-group-text"><Lock size={18} /></span>
+                      <span className="input-group-text bg-light border-end-0">
+                        <Lock size={16} className="text-muted" />
+                      </span>
                       <Form.Control
                         type="password"
                         placeholder="••••••••"
+                        className="border-start-0 ps-0"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={e => setPassword(e.target.value)}
                         disabled={isLoading}
+                        autoComplete="current-password"
                       />
                     </div>
                   </Form.Group>
 
-                  <Button
-                    variant="warning"
-                    size="lg"
-                    className="w-100 fw-bold py-3"
-                    type="submit"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 size={20} className="me-2 spin" />
-                        Bejelentkezés...
-                      </>
-                    ) : 'Bejelentkezés'}
+                  <Button variant="warning" size="lg" className="w-100 fw-bold py-3 rounded-3"
+                    type="submit" disabled={isLoading}>
+                    {isLoading
+                      ? <><Loader2 size={20} className="me-2 spin" />Bejelentkezés...</>
+                      : 'Bejelentkezés'}
                   </Button>
                 </Form>
 
                 <div className="text-center mt-4">
-                  <span className="text-muted">Még nincs fiókod? </span>
-                  <Button variant="link" className="text-warning fw-medium p-0" onClick={onRegisterClick}>
+                  <span className="text-muted small">Még nincs fiókod? </span>
+                  <Button variant="link" className="text-warning fw-bold p-0 small text-decoration-none"
+                    onClick={onRegisterClick}>
                     Regisztrálj most
                   </Button>
                 </div>
@@ -114,35 +148,54 @@ const LoginPage = ({ onRegisterClick, onLogin }) => {
         </Row>
       </Container>
 
-      {showForgot && (
-        <div className="position-fixed top-0 start-0 w-100 h-100 bg-black bg-opacity-50 d-flex align-items-center justify-content-center" style={{ zIndex: 1050 }}>
-          <Card className="w-100 shadow" style={{ maxWidth: '420px' }}>
-            <Card.Body className="p-4">
-              <div className="d-flex align-items-center mb-3">
-                <Button variant="link" className="p-0 me-3" onClick={() => setShowForgot(false)}>
-                  <ArrowLeft size={24} />
-                </Button>
-                <h4 className="mb-0">Jelszó visszaállítása</h4>
-              </div>
-              <p className="text-muted">Add meg az email címedet, és küldünk egy linket.</p>
+      {/* Elfelejtett jelszó modal */}
+      <Modal show={showForgot} onHide={closeForgot} centered>
+        <Modal.Header closeButton className="border-0 pb-0">
+          <Modal.Title className="fw-bold fs-5">Jelszó visszaállítása</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="pt-2 pb-4 px-4">
+          {!forgotSent ? (
+            <>
+              <p className="text-muted small mb-3">
+                Add meg a regisztrált email címedet és küldünk egy visszaállítási linket.
+              </p>
               <Form onSubmit={handleForgot}>
-                <Form.Group className="mb-3">
-                  <div className="input-group">
-                    <span className="input-group-text"><Mail size={18} /></span>
-                    <Form.Control
-                      type="email"
-                      placeholder="email@pelda.hu"
-                      value={forgotEmail}
-                      onChange={(e) => setForgotEmail(e.target.value)}
-                    />
-                  </div>
-                </Form.Group>
-                <Button type="submit" variant="warning" className="w-100">Link küldése</Button>
+                <div className="input-group mb-3">
+                  <span className="input-group-text bg-light border-end-0">
+                    <Mail size={16} className="text-muted" />
+                  </span>
+                  <Form.Control
+                    type="email"
+                    placeholder="email@pelda.hu"
+                    className="border-start-0 ps-0"
+                    value={forgotEmail}
+                    onChange={e => setForgotEmail(e.target.value)}
+                    autoComplete="email"
+                    required
+                  />
+                </div>
+                <Button type="submit" variant="warning" className="w-100 fw-bold" disabled={forgotLoading}>
+                  {forgotLoading
+                    ? <><Loader2 size={16} className="me-2 spin" />Küldés...</>
+                    : 'Link küldése'}
+                </Button>
               </Form>
-            </Card.Body>
-          </Card>
-        </div>
-      )}
+            </>
+          ) : (
+            <div className="text-center py-3">
+              <CheckCircle size={52} color="#16a34a" className="mb-3" />
+              <h6 className="fw-bold mb-2">Email elküldve! 📧</h6>
+              <p className="text-muted small mb-4">
+                Ha a megadott email regisztrálva van, hamarosan megérkezik a visszaállítási link.
+                <br /><strong>Nézd meg a spam mappát is!</strong>
+              </p>
+              <Button variant="outline-secondary" className="w-100" onClick={closeForgot}>
+                Rendben
+              </Button>
+            </div>
+          )}
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

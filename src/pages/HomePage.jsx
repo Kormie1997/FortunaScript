@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
-import { Trophy, Clock, Sparkles, TrendingUp, Star, Zap, ChevronRight } from 'lucide-react';
+import { Sparkles, Zap, Gem, Mail, Phone, Facebook, Instagram, Twitter} from 'lucide-react';
 import api from '../services/api';
 
 const HomePage = ({ onGameSelect }) => {
@@ -139,7 +139,7 @@ const HomePage = ({ onGameSelect }) => {
                     <span className="fs-3 fw-bold text-primary">{game.ticketPrice}</span>
                     <span className="text-muted"> / szelvény</span>
                   </div>
-                  <Button variant="primary" className="rounded-pill">
+                  <Button variant="warning" className="rounded-pill fw-bold">
                     <Zap size={18} className="me-2" /> Játék
                   </Button>
                 </div>
@@ -148,6 +148,73 @@ const HomePage = ({ onGameSelect }) => {
           </Col>
         ))}
       </Row>
+       <footer className="bg-dark text-white mt-5 pt-5 pb-3 rounded-4">
+        <Container>
+          <Row className="g-4 mb-4">
+            <Col md={4}>
+              <div className="d-flex align-items-center gap-2 mb-3">
+                <div className="p-2 rounded-2" style={{ background: 'linear-gradient(135deg, #f59e0b, #ea580c)' }}>
+                  <Gem size={20} color="white" />
+                </div>
+                <span className="fw-bold fs-5">Fortuna Lotto</span>
+              </div>
+              <p className="text-white-50 small">
+                Magyarország megbízható online lottó platformja. Játssz felelősségteljesen!
+              </p>
+              <div className="d-flex gap-3 mt-3">
+                <a href="#" className="text-white-50 text-decoration-none"><Facebook size={20} /></a>
+                <a href="#" className="text-white-50 text-decoration-none"><Instagram size={20} /></a>
+                <a href="#" className="text-white-50 text-decoration-none"><Twitter size={20} /></a>
+              </div>
+            </Col>
+
+            <Col md={2}>
+              <h6 className="fw-bold mb-3 text-warning">Játékok</h6>
+              <ul className="list-unstyled">
+                {['Ötös Lottó', 'Skandináv Lottó', 'Eurojackpot', 'Joker', 'Kenó', 'Hatos Lottó'].map(game => (
+                  <li key={game} className="mb-2">
+                    <span className="text-white-50 small">{game}</span>
+                  </li>
+                ))}
+              </ul>
+            </Col>
+
+            <Col md={3}>
+              <h6 className="fw-bold mb-3 text-warning">Információk</h6>
+              <ul className="list-unstyled">
+                {['Játékszabályok','Nyeremények kifizetése','Felelős játék','Adatvédelmi irányelvek','Felhasználási feltételek','GYIK'].map(item => (
+                  <li key={item} className="mb-2">
+                    <a href="#" className="text-white-50 small text-decoration-none">{item}</a>
+                  </li>
+                ))}
+              </ul>
+            </Col>
+
+            <Col md={3}>
+              <h6 className="fw-bold mb-3 text-warning">Kapcsolat</h6>
+              <ul className="list-unstyled">
+                <li className="mb-2 d-flex align-items-center gap-2 text-white-50 small">
+                  <Mail size={14} /> info@fortunalotto.hu
+                </li>
+                <li className="mb-2 d-flex align-items-center gap-2 text-white-50 small">
+                  <Phone size={14} /> +36 1 234 5678
+                </li>
+              </ul>
+              <div className="mt-3 p-2 rounded-2 border border-secondary">
+                <p className="text-white-50 small mb-0">
+                  ⚠️ A szerencsejáték kizárólag 18 éven felülieknek ajánlott!
+                </p>
+              </div>
+            </Col>
+          </Row>
+
+          <hr className="border-secondary" />
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <p className="text-white-50 small mb-0">© {new Date().getFullYear()} Fortuna Lotto. Minden jog fenntartva.</p>
+            <p className="text-white-50 small mb-0">🔒 Biztonságos és titkosított kapcsolat</p>
+          </div>
+        </Container>
+      </footer>
     </Container>
   );
 };
