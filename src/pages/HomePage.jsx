@@ -169,15 +169,23 @@ const HomePage = ({ onGameSelect }) => {
             </Col>
 
             <Col md={2}>
-              <h6 className="fw-bold mb-3 text-warning">Játékok</h6>
-              <ul className="list-unstyled">
-                {['Ötös Lottó', 'Skandináv Lottó', 'Eurojackpot', 'Joker', 'Kenó', 'Hatos Lottó'].map(game => (
-                  <li key={game} className="mb-2">
-                    <span className="text-white-50 small">{game}</span>
-                  </li>
-                ))}
-              </ul>
-            </Col>
+            <h6 className="fw-bold mb-3 text-warning">Játékok</h6>
+            <ul className="list-unstyled">
+              {games.map(game => (
+                <li key={game.id} className="mb-2">
+                  <span
+                    className="text-white-50 small"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => onGameSelect(game)}
+                    onMouseEnter={e => e.target.style.color = '#f59e0b'}
+                    onMouseLeave={e => e.target.style.color = ''}
+                  >
+                    {game.name}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Col>
 
             <Col md={3}>
               <h6 className="fw-bold mb-3 text-warning">Információk</h6>
