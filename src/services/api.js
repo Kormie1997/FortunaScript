@@ -99,6 +99,8 @@ const api = {
     }),
   },
 
+  delete: (id) => fetchApi(`/api/admin/draws/${id}`, { method: 'DELETE' }),
+
   //Egyenleg
   balance: {
     topup: (amount) => api.request('/balance/topup', {

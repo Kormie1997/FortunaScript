@@ -535,7 +535,7 @@ const handleExecuteDraw = async (drawId, gameType) => {
                 <div className="d-flex flex-column gap-3">
                   {draws.map(draw => {
                     const isExecuting = executingDrawId === draw.id;
-                    const canExecute  = !draw.isDrawn && draw.isActive && isPastDue(draw.drawDate);
+                    const canExecute = !draw.isDrawn && draw.isActive;
                     const color       = GAME_COLORS[draw.gameType] || '#6b7280';
                     return (
                       <div key={draw.id} className="border rounded-3 p-3">
