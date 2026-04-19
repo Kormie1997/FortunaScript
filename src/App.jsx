@@ -11,6 +11,7 @@ import LotteryTicket from './components/LotteryTicket';
 import Navigation from './components/Navigation';
 import Cart from './components/Cart';
 import { Toaster, toast } from 'sonner';
+import InfoPage from './pages/InfoPage';
 
 function App() {
   const [user, setUser]                   = useState(null);
@@ -22,6 +23,7 @@ function App() {
   const [cart, setCart]                   = useState([]);
   const [showCart, setShowCart]           = useState(false);
   const [specialRoute, setSpecialRoute]   = useState(null);
+  const [infoPage, setInfoPage] = useState(null);
 
   useEffect(() => {
     const path   = window.location.pathname;
@@ -192,6 +194,7 @@ function App() {
     setCart([]);
     return true;
   };
+  
 
   // ✅ Speciális route-ok
   if (specialRoute === 'confirm-email') {
@@ -244,15 +247,17 @@ function App() {
 
   const renderView = () => {
     switch (currentView) {
-      case 'home':    return <HomePage onGameSelect={handleGameSelect} user={user} />;
+      case 'home':    return infoPage
+        ? <InfoPage page={infoPage} onBack={() => setInfoPage(null)} />
+        : <HomePage onGameSelect={handleGameSelect} user={user} onInfoSelect={setInfoPage} />;
       case 'ticket':  return selectedGame
         ? <LotteryTicket game={selectedGame} onBack={handleBackFromGame} user={user} onAddToCart={addToCart} />
-        : <HomePage onGameSelect={handleGameSelect} user={user} />;
+        : <HomePage onGameSelect={handleGameSelect} user={user} onInfoSelect={setInfoPage} />;
       case 'account': return <AccountPage user={user} onLogout={logout} onBalanceUpdate={handleBalanceUpdate} />;
       case 'admin':   return user?.roles?.includes('admin')
         ? <AdminPage user={user} />
-        : <HomePage onGameSelect={handleGameSelect} user={user} />;
-      default:        return <HomePage onGameSelect={handleGameSelect} user={user} />;
+        : <HomePage onGameSelect={handleGameSelect} user={user} onInfoSelect={setInfoPage} />;
+      default:        return <HomePage onGameSelect={handleGameSelect} user={user} onInfoSelect={setInfoPage} />;
     }
   };
 

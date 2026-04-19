@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
 import { Sparkles, Zap, Gem, Mail, Phone, Facebook, Instagram, Twitter} from 'lucide-react';
 import api from '../services/api';
 
-const HomePage = ({ onGameSelect }) => {
+const HomePage = ({ onGameSelect, onInfoSelect }) => {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -87,6 +87,8 @@ const HomePage = ({ onGameSelect }) => {
 
     loadGames();
   }, []);
+
+  
 
   return (
     <Container fluid className="py-4">
