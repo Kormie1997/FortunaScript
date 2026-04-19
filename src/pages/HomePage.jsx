@@ -188,15 +188,30 @@ const HomePage = ({ onGameSelect }) => {
           </Col>
 
             <Col md={3}>
-              <h6 className="fw-bold mb-3 text-warning">Információk</h6>
-              <ul className="list-unstyled">
-                {['Játékszabályok','Nyeremények kifizetése','Felelős játék','Adatvédelmi irányelvek','Felhasználási feltételek','GYIK'].map(item => (
-                  <li key={item} className="mb-2">
-                    <a href="#" className="text-white-50 small text-decoration-none">{item}</a>
-                  </li>
-                ))}
-              </ul>
-            </Col>
+            <h6 className="fw-bold mb-3 text-warning">Információk</h6>
+            <ul className="list-unstyled">
+              {[
+                { label: 'Játékszabályok',          key: 'jatekszabalyok' },
+                { label: 'Nyeremények kifizetése',  key: 'nyeremenyek'    },
+                { label: 'Felelős játék',           key: 'felelosjatek'   },
+                { label: 'Adatvédelmi irányelvek',  key: 'adatvedelem'    },
+                { label: 'Felhasználási feltételek',key: 'feltetelek'     },
+                { label: 'GYIK',                    key: 'gyik'           },
+              ].map(item => (
+                <li key={item.key} className="mb-2">
+                  <span
+                    className="text-white-50 small"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => onInfoSelect(item.key)}
+                    onMouseEnter={e => e.target.style.color = '#f59e0b'}
+                    onMouseLeave={e => e.target.style.color = ''}
+                  >
+                    {item.label}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Col>
 
             <Col md={3}>
               <h6 className="fw-bold mb-3 text-warning">Kapcsolat</h6>
