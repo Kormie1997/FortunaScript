@@ -12,6 +12,7 @@ import Navigation from './components/Navigation';
 import Cart from './components/Cart';
 import { Toaster, toast } from 'sonner';
 import InfoPage from './pages/InfoPage';
+import KenoTicket from './components/KenoTicket';
 
 function App() {
   const [user, setUser]                   = useState(null);
@@ -250,9 +251,13 @@ function App() {
       case 'home':    return infoPage
         ? <InfoPage page={infoPage} onBack={() => setInfoPage(null)} />
         : <HomePage onGameSelect={handleGameSelect} user={user} onInfoSelect={setInfoPage} />;
-      case 'ticket':  return selectedGame
-        ? <LotteryTicket game={selectedGame} onBack={handleBackFromGame} user={user} onAddToCart={addToCart} />
-        : <HomePage onGameSelect={handleGameSelect} user={user} onInfoSelect={setInfoPage} />;
+      case 'ticket':
+  return selectedGame
+    ? (selectedGame.name === 'Kenó'
+        ? <KenoTicket game={selectedGame} onBack={handleBackFromGame} user={user} onAddToCart={addToCart} />
+        : <LotteryTicket game={selectedGame} onBack={handleBackFromGame} user={user} onAddToCart={addToCart} />
+      )
+    : <HomePage onGameSelect={handleGameSelect} user={user} onInfoSelect={setInfoPage} />;
       case 'account': return <AccountPage user={user} onLogout={logout} onBalanceUpdate={handleBalanceUpdate} />;
       case 'admin':   return user?.roles?.includes('admin')
         ? <AdminPage user={user} />
