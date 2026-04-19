@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Badge, Tabs, Tab, Form, Spinner, InputGroup, Modal, Alert } from 'react-bootstrap';
 import { 
   Shield, Users, Ticket, TrendingUp, DollarSign, Search, Ban, CheckCircle, 
-  BarChart3, Pause, RotateCcw, Database, AlertTriangle, Settings, RefreshCw, 
-  CreditCard, Activity, Calendar, Award, Play, Plus, Eye, ToggleLeft, ToggleRight, Zap, Trophy
+BarChart3, Pause, RotateCcw, Database, AlertTriangle, Settings, RefreshCw, 
+CreditCard, Activity, Calendar, Award, Play, Plus, Eye, ToggleLeft, ToggleRight, Zap, Trophy, Trash2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../services/api';
@@ -69,6 +69,9 @@ const AdminPage = ({ user }) => {
   const [showResults, setShowResults]     = useState(false);
   const [drawResults, setDrawResults]     = useState(null);
   const [loadingResults, setLoadingResults] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingDraw, setDeletingDraw]       = useState(null);
+  const [deleteLoading, setDeleteLoading]     = useState(false);
 
   const GAME_COLORS = {
   Lottery5: '#10b981', Lottery6: '#7c3aed', Scandinavian: '#1d4ed8',
@@ -267,6 +270,27 @@ const handleExecuteDraw = async (drawId, gameType) => {
 };
 
   const isPastDue = (drawDate) => new Date(drawDate) <= new Date();
+
+  const handleDeleteDraw = (draw) => {
+  setDeletingDraw(draw);
+  setShowDeleteModal(true);
+};
+
+const confirmDeleteDraw = async () => {
+  if (!deletingDraw) return;
+  setDeleteLoading(true);
+  try {
+    await api.draws.delete(deletingDraw.id);
+    toast.success('Sorsolás sikeresen törölve!');
+    setShowDeleteModal(false);
+    setDeletingDraw(null);
+    loadDraws();
+  } catch (err) {
+    toast.error(err.message || 'Törlési hiba!');
+  } finally {
+    setDeleteLoading(false);
+  }
+};
 
   const handleViewResults = async (drawId) => {
     setShowResults(true);
@@ -592,6 +616,13 @@ const handleExecuteDraw = async (drawId, gameType) => {
                               <Eye size={14} className="me-1"/> Eredmények
                             </Button>
                             )}
+                            {!draw.isDrawn && (
+                              <Button size="sm" variant="danger"
+                                onClick={() => handleDeleteDraw(draw)}
+                                title="Sorsolás törlése">
+                                <Trash2 size={14} />
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -601,6 +632,36 @@ const handleExecuteDraw = async (drawId, gameType) => {
               )}
             </>
           )}
+          <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+            <Modal.Header closeButton>
+              <Modal.Title className="fw-bold text-danger">
+                <Trash2 size={20} className="me-2"/>Sorsolás törlése
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Alert variant="danger" className="mb-3">
+                <strong>⚠️ Figyelem!</strong> Ez a művelet nem visszavonható!
+              </Alert>
+              <p className="mb-1">Biztosan törölni szeretnéd ezt a sorsolást?</p>
+              <p className="fw-bold mb-0">
+                {GAME_LABELS[deletingDraw?.gameType] || deletingDraw?.gameType} — {deletingDraw && new Date(deletingDraw.drawDate).toLocaleString('hu-HU')}
+              </p>
+              {(deletingDraw?.ticketCount > 0) && (
+                <Alert variant="warning" className="mt-3 mb-0 small">
+                  ⚠️ Ehhez a sorsoláshoz <strong>{deletingDraw.ticketCount} szelvény</strong> tartozik — azok is törlésre kerülnek!
+                </Alert>
+              )}
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="outline-secondary" onClick={() => setShowDeleteModal(false)}>Mégse</Button>
+              <Button variant="danger" className="fw-bold" onClick={confirmDeleteDraw} disabled={deleteLoading}>
+                {deleteLoading
+                  ? <Spinner size="sm" animation="border" className="me-1"/>
+                  : <Trash2 size={16} className="me-1"/>}
+                Törlés
+              </Button>
+            </Modal.Footer>
+          </Modal>
           {/*FELHASZNÁLÓK*/}
           {activeTab === 'users' && (
             <>

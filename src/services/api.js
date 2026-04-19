@@ -24,7 +24,7 @@ const api = {
 
   //Auth
   auth: {
-    login:  (data) => api.request('/auth/login',    { method: 'POST', body: JSON.stringify(data) }),
+    login:    (data) => api.request('/auth/login',    { method: 'POST', body: JSON.stringify(data) }),
     register: (data) => api.request('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
   },
 
@@ -57,29 +57,28 @@ const api = {
       return api.request(`/admin/draws${query ? '?' + query : ''}`);
     },
 
-    //Összefoglaló
     getSummary: () => api.request('/admin/draws/summary'),
 
-    //Egy sorsolás részletei
     getById: (id) => api.request(`/admin/draws/${id}`),
 
-    //Eredmények / nyertesek
     getResults: (id) => api.request(`/admin/draws/${id}/results`),
 
-    //Új sorsolás létrehozása
     create: (data) => api.request('/admin/draws/create', {
       method: 'POST',
       body: JSON.stringify(data)
     }),
 
-    //Aktiválás / deaktiválás
     toggleActive: (id) => api.request(`/admin/draws/${id}/toggle-active`, {
       method: 'PUT'
     }),
 
-    //Sorsolások végrehajtása
     execute: (id) => api.request(`/admin/draws/${id}/execute`, {
       method: 'POST'
+    }),
+
+    //Sorsolás törlése
+    delete: (id) => api.request(`/admin/draws/${id}`, {
+      method: 'DELETE'
     }),
   },
 
@@ -98,8 +97,6 @@ const api = {
       body: JSON.stringify(data)
     }),
   },
-
-  delete: (id) => fetchApi(`/api/admin/draws/${id}`, { method: 'DELETE' }),
 
   //Egyenleg
   balance: {
