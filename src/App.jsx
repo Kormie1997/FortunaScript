@@ -111,27 +111,25 @@ function App() {
 };
 
   const register = async (credentials) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials)
-      });
+  try {
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(credentials)
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Regisztrációs hiba');
-      }
-
-      return true;
-    } catch (err) {
-      toast.error(err.message || 'Regisztrációs hiba történt');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      toast.error(errorData.message || 'Regisztrációs hiba történt');
       return false;
-    } finally {
-      setIsLoading(false);
     }
-  };
+
+    return true;
+  } catch (err) {
+    toast.error('Regisztrációs hiba történt');
+    return false;
+  }
+};
 
   const logout = () => {
     setUser(null);
