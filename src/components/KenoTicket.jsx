@@ -293,17 +293,22 @@ function KenoTicket({ game, onBack, user, onAddToCart }) {
 
           {jokerNumbers.map((num, idx) => (
             <div key={idx} className="mb-2">
-              <div className="joker-row">
+              <div className="joker-row" style={{ display: 'flex', gap: '6px', width: '100%' }}>
                 <input
-                  type="text" maxLength={6} value={num}
+                  type="text"
+                  maxLength={6}
+                  value={num}
                   onChange={e => handleJokerChange(idx, e.target.value)}
                   placeholder="------"
-                  className={`joker-input flex-1 px-3 py-2 border-2 rounded-lg focus:outline-none ${
+                  style={{ flex: 1, minWidth: 0 }}
+                  className={`joker-input px-3 py-2 border-2 rounded-lg focus:outline-none ${
                     jokerErrors[idx] ? 'border-red-400' : num.length === 6 ? 'border-green-400' : 'border-gray-200 focus:border-amber-500'
                   }`}
                 />
-                <button onClick={() => quickJoker(idx)}
-                  className="px-3 py-2 border-2 border-green-500 text-green-600 rounded-lg hover:bg-green-50">
+                <button
+                  onClick={() => quickJoker(idx)}
+                  style={{ flexShrink: 0 }}
+                  className="px-2 py-2 border-2 border-green-500 text-green-600 rounded-lg hover:bg-green-50">
                   <RefreshCw className="w-4 h-4" />
                 </button>
               </div>

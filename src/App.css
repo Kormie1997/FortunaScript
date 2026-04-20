@@ -13,7 +13,7 @@ body {
   margin: 0;
   padding: 0;
   min-width: 320px;
-  overflow-x: hidden; /* ✅ Vízszintes scroll tiltás */
+  overflow-x: hidden;
 }
 
 /* Animations */
@@ -126,7 +126,7 @@ body {
 
 .ticket-main {
   flex: 1;
-  min-width: 0; /*Fontos! Megakadályozza a túlnyúlást */
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -138,7 +138,7 @@ body {
   border: 2px solid #e5e5e5;
   transition: all 0.3s ease;
   width: 100%;
-  overflow: hidden; /* ✅ */
+  overflow: hidden;
 }
 
 .ticket-panel:hover { border-color: #f59e0b; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15); }
@@ -155,13 +155,22 @@ body {
 
 .ticket-header strong { font-size: 15px; color: #333; }
 
-/*Number Grid - overflow biztonságos */
+/* Number Grid */
 .number-grid {
   display: grid;
-  grid-template-columns: repeat(15, minmax(0, 1fr)); /* ✅ minmax(0,1fr) fix */
+  grid-template-columns: repeat(15, minmax(0, 1fr));
   gap: 3px;
   margin-top: 10px;
   width: 100%;
+}
+
+/*Dinamikus számrács - CSS variable alapján */
+.number-grid-dynamic {
+  display: grid;
+  gap: 3px;
+  margin-top: 8px;
+  width: 100%;
+  grid-template-columns: repeat(var(--grid-cols, 15), minmax(0, 1fr));
 }
 
 .number-cell {
@@ -190,7 +199,7 @@ body {
   margin-top: 8px;
   min-height: 24px;
   color: #374151;
-  word-break: break-word; /* ✅ */
+  word-break: break-word;
 }
 
 .selected-numbers .check { color: #16a34a; font-weight: bold; margin-left: 4px; }
@@ -279,17 +288,23 @@ body {
     flex-direction: column;
   }
 
+  /* ✅ Sidebar FELÜLRE kerül mobilon */
   .ticket-sidebar {
     width: 100%;
     min-width: unset;
     position: static;
-    order: 2;
+    order: 1;
   }
 
-  .ticket-main { order: 1; }
+  .ticket-main { order: 2; }
 
   .number-grid {
     grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  /* ✅ Dinamikus rács is alkalmazkodik */
+  .number-grid-dynamic {
+    grid-template-columns: repeat(min(var(--grid-cols, 15), 12), minmax(0, 1fr));
   }
 }
 
@@ -302,6 +317,11 @@ body {
 
   .number-grid {
     grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: 2px;
+  }
+
+  .number-grid-dynamic {
+    grid-template-columns: repeat(min(var(--grid-cols, 10), 10), minmax(0, 1fr));
     gap: 2px;
   }
 
@@ -329,7 +349,6 @@ body {
 @media (max-width: 576px) {
   html { font-size: 13px; }
 
-  /*Container padding csökkentése */
   .container, .container-fluid {
     padding-left: 10px !important;
     padding-right: 10px !important;
@@ -354,6 +373,11 @@ body {
     gap: 2px;
   }
 
+  .number-grid-dynamic {
+    grid-template-columns: repeat(min(var(--grid-cols, 9), 9), minmax(0, 1fr));
+    gap: 2px;
+  }
+
   .number-cell { font-size: 10px; min-height: 26px; }
 
   .joker-row { gap: 4px; }
@@ -363,7 +387,6 @@ body {
   .game-card-header { height: 100px; }
   .game-card-header img { height: 60px; }
 
-  /*Admin / Account oldalak mobilon */
   .nav-tabs { flex-wrap: nowrap; overflow-x: auto; }
   .nav-tabs .nav-link { white-space: nowrap; font-size: 13px; padding: 8px 12px; }
 }
@@ -375,12 +398,16 @@ body {
     gap: 2px;
   }
 
+  .number-grid-dynamic {
+    grid-template-columns: repeat(min(var(--grid-cols, 7), 7), minmax(0, 1fr));
+    gap: 2px;
+  }
+
   .number-cell { font-size: 10px; min-height: 24px; }
 
   .ticket-header button svg { width: 14px; height: 14px; }
   .ticket-header button { padding: 6px 8px; font-size: 11px; }
 
-  /* ✅ Stat kártyák mobilon */
   .card-body h3 { font-size: 1.3rem; }
 }
 
@@ -390,6 +417,10 @@ body {
 
   .number-grid {
     grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .number-grid-dynamic {
+    grid-template-columns: repeat(min(var(--grid-cols, 6), 6), minmax(0, 1fr));
   }
 
   .number-cell { font-size: 9px; min-height: 22px; }
