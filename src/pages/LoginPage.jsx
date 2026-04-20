@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Container, Row, Col, Card, Form, Button, Modal } from 'react-bootstrap';
-import { User, Lock, Mail, ArrowLeft, Sparkles, Loader2, Gem, CheckCircle } from 'lucide-react';
+import { User, Lock, Mail, ArrowLeft, Sparkles, Loader2, Gem, CheckCircle, Ban } from 'lucide-react';
 import { toast } from 'sonner';
 
 const LoginPage = ({ onRegisterClick, onLogin }) => {
@@ -11,22 +11,25 @@ const LoginPage = ({ onRegisterClick, onLogin }) => {
   const [forgotSent, setForgotSent]     = useState(false);
   const [forgotLoading, setForgotLoading] = useState(false);
   const [isLoading, setIsLoading]       = useState(false);
+  const [showBanned, setShowBanned] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!username || !password) {
-      toast.error('Add meg a felhasználóneved és jelszavad!');
-      return;
-    }
-    setIsLoading(true);
-    const success = await onLogin({ username, password });
-    if (success) {
-      toast.success('Sikeres belépés! Üdv újra! 👋');
-    } else {
-      toast.error('Hibás felhasználónév vagy jelszó!');
-    }
-    setIsLoading(false);
-  };
+  e.preventDefault();
+  if (!username || !password) {
+    toast.error('Add meg a felhasználóneved és jelszavad!');
+    return;
+  }
+  setIsLoading(true);
+  const result = await onLogin({ username, password });
+  console.log('Login result:', result, typeof result);
+  if (result === true) {
+  } else if (result === 'banned') {
+    setShowBanned(true);
+  } else {
+    toast.error('Hibás felhasználónév vagy jelszó!');
+  }
+  setIsLoading(false);
+};
 
   const handleForgot = async (e) => {
     e.preventDefault();
@@ -147,6 +150,30 @@ const LoginPage = ({ onRegisterClick, onLogin }) => {
           </Col>
         </Row>
       </Container>
+
+      <Modal show={showBanned} onHide={() => setShowBanned(false)} centered>
+        <Modal.Body className="text-center p-5">
+          <div className="mb-4">
+            <div className="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+              style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, #dc2626, #b91c1c)' }}>
+              <Ban size={44} color="white" />
+            </div>
+          </div>
+          <h4 className="fw-bold mb-2 text-danger">Fiók tiltva!</h4>
+          <p className="text-muted mb-4">
+            A fiókod tiltásra került. További információért kérjük lépj kapcsolatba velünk!
+          </p>
+          <div className="p-3 rounded-3 mb-4" style={{ background: '#fef2f2', border: '1px solid #fecaca' }}>
+            <p className="text-danger small mb-0">
+              📧 Kapcsolat: <strong>support@fortunalotto.hu</strong>
+            </p>
+          </div>
+          <Button variant="outline-secondary" className="w-100 fw-bold rounded-3"
+            onClick={() => setShowBanned(false)}>
+            Rendben
+          </Button>
+        </Modal.Body>
+      </Modal>
 
       {/* Elfelejtett jelszó modal */}
       <Modal show={showForgot} onHide={closeForgot} centered>

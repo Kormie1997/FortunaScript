@@ -368,7 +368,7 @@ const confirmDeleteDraw = async () => {
                         value={stats.totalTickets?.toLocaleString()}
                         sub={`${stats.activeTickets} aktív · ${stats.ticketsToday || 0} mai`}
                         icon={Ticket}
-                        gradient="linear-gradient(135deg, #10b981, #059669)"
+                        gradient="linear-gradient(135deg, #ec4899, #9f1239)"
                       />
                     </Col>
                     <Col md={3}>
@@ -493,15 +493,38 @@ const confirmDeleteDraw = async () => {
                         <Card.Body>
                           <Row className="g-3">
                             {[
-                              { label: 'Összes bevétel', value: stats.totalRevenue, color: 'success' },
-                              { label: 'Havi bevétel', value: stats.monthRevenue, color: 'primary' },
-                              { label: 'Kifizetett nyeremények', value: stats.totalPayouts, color: 'warning' },
-                              { label: 'Rendszerben lévő Ft', value: stats.totalBalance, color: 'info' },
+                              { 
+                                label: 'Összes bevétel', 
+                                value: stats.totalRevenue, 
+                                gradient: 'linear-gradient(135deg, #e7788a, #881337)' 
+                              },
+                              { 
+                                label: 'Havi bevétel', 
+                                value: stats.monthRevenue, 
+                                gradient: 'linear-gradient(135deg, #0d6efd, #0a58ca)' 
+                              },
+                              { 
+                                label: 'Kifizetett nyeremények', 
+                                value: stats.totalPayouts, 
+                                gradient: 'linear-gradient(135deg, #f59e0b, #b45309)' 
+                              },
+                              { 
+                                label: 'Rendszerben lévő Ft', 
+                                value: stats.totalBalance, 
+                                gradient: 'linear-gradient(135deg, #38c7dd, #05485a)' 
+                              },
                             ].map((item, i) => (
                               <Col md={3} key={i}>
-                                <div className={`border border-${item.color} rounded-3 p-3 text-center`}>
-                                  <p className="text-muted small mb-1">{item.label}</p>
-                                  <h5 className={`fw-bold text-${item.color} mb-0`}>
+                                <div
+                                  className="rounded-3 p-3 text-center shadow-sm"
+                                  style={{
+                                    background: item.gradient,
+                                    color: '#ffffff',
+                                    border: 'none',
+                                  }}
+                                >
+                                  <p className="small mb-1 opacity-75">{item.label}</p>
+                                  <h5 className="fw-bold mb-0">
                                     {(item.value || 0).toLocaleString()} Ft
                                   </h5>
                                 </div>
@@ -755,7 +778,7 @@ const confirmDeleteDraw = async () => {
           {/*SZELVÉNYEK*/}
           {activeTab === 'tickets' && (
             <>
-              <div className="d-flex justify-content-between align-items-center mb-3">
+              <div className="d-flex justify-content-between align-items-center mb-3 text=black">
                 <h5 className="fw-bold mb-0">Összes szelvény</h5>
                 <Button variant="outline-secondary" size="sm" onClick={loadTickets}>
                   <RefreshCw size={16} className="me-1" /> Frissítés

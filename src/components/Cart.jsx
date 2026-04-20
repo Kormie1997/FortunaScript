@@ -188,7 +188,7 @@ function Cart({ cart, onClose, onRemove, onClear, onCheckout, user }) {
             </div>
             <div className="d-flex justify-content-between align-items-center mb-2">
               <span className="text-muted">Összesen:</span>
-              <span className={`fs-4 fw-bold ${insufficientBalance ? 'text-danger' : 'text-warning'}`}>
+              <span className={`fs-4 fw-bold ${insufficientBalance ? 'text-danger' : 'text-success'}`}>
                 {getTotalPrice().toLocaleString()} Ft
               </span>
             </div>
@@ -210,7 +210,7 @@ function Cart({ cart, onClose, onRemove, onClear, onCheckout, user }) {
                 <Trash2 size={16} className="me-1" /> Törlés
               </Button>
               <Button
-                variant="warning"
+                variant="danger"
                 className="flex-grow-1 fw-bold"
                 onClick={handleCheckout}
                 disabled={isCheckingOut || insufficientBalance}

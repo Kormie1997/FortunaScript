@@ -205,7 +205,9 @@ body {
 .selected-numbers .check { color: #16a34a; font-weight: bold; margin-left: 4px; }
 
 /* Joker */
-.joker-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.joker-row { display: flex; gap: 8px; margin-bottom: 8px; width: 100%; }
+.joker-row .joker-input { flex: 1; min-width: 0; }
+.joker-row button { flex-shrink: 0; }
 .joker-input {
   text-align: center;
   letter-spacing: 4px;

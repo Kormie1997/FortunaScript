@@ -85,28 +85,30 @@ function App() {
   };
 
   const login = async (credentials) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials)
-      });
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(credentials)
+    });
 
-      if (!response.ok) return false;
-
-      const data = await response.json();
-      setUser(data.user);
-      setIsAuthenticated(true);
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      return true;
-    } catch {
+    if (!response.ok) {
+      const text = await response.text();
+      if (text.includes('banned')) return 'banned';
       return false;
-    } finally {
-      setIsLoading(false);
     }
-  };
+
+    const data = await response.json();
+    setUser(data.user);
+    setIsAuthenticated(true);
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    setTimeout(() => toast.success('Sikeres belépés! Üdv újra! 👋'), 100);
+    return true;
+  } catch {
+    return false;
+  }
+};
 
   const register = async (credentials) => {
     setIsLoading(true);
