@@ -197,7 +197,7 @@ function App() {
   };
   
 
-  // ✅ Speciális route-ok
+  // Speciális route-ok
   if (specialRoute === 'confirm-email') {
     return (
       <>
@@ -242,27 +242,27 @@ function App() {
       </>
     );
   }
-
-  const handleGameSelect = (game) => { setSelectedGame(game); setCurrentView('ticket'); };
+  const handleInfoSelect = (page) => {setInfoPage(page); setCurrentView('home'); };
+  const handleGameSelect = (game) => { setSelectedGame(game); setCurrentView('ticket'); setInfoPage(null); };
   const handleBackFromGame = () => { setSelectedGame(null); setCurrentView('home'); };
 
   const renderView = () => {
     switch (currentView) {
       case 'home':    return infoPage
         ? <InfoPage page={infoPage} onBack={() => setInfoPage(null)} />
-        : <HomePage onGameSelect={handleGameSelect} user={user} onInfoSelect={setInfoPage} />;
+        : <HomePage onGameSelect={handleGameSelect} user={user} onInfoSelect={handleInfoSelect} />;
       case 'ticket':
   return selectedGame
     ? (selectedGame.name === 'Kenó'
         ? <KenoTicket game={selectedGame} onBack={handleBackFromGame} user={user} onAddToCart={addToCart} />
         : <LotteryTicket game={selectedGame} onBack={handleBackFromGame} user={user} onAddToCart={addToCart} />
       )
-    : <HomePage onGameSelect={handleGameSelect} user={user} onInfoSelect={setInfoPage} />;
+    : <HomePage onGameSelect={handleGameSelect} user={user} onInfoSelect={handleInfoSelect} />;
       case 'account': return <AccountPage user={user} onLogout={logout} onBalanceUpdate={handleBalanceUpdate} />;
       case 'admin':   return user?.roles?.includes('admin')
         ? <AdminPage user={user} />
-        : <HomePage onGameSelect={handleGameSelect} user={user} onInfoSelect={setInfoPage} />;
-      default:        return <HomePage onGameSelect={handleGameSelect} user={user} onInfoSelect={setInfoPage} />;
+        : <HomePage onGameSelect={handleGameSelect} user={user} onInfoSelect={handleInfoSelect} />;
+      default:        return <HomePage onGameSelect={handleGameSelect} user={user} onInfoSelect={handleInfoSelect} />;
     }
   };
 

@@ -74,7 +74,7 @@ const HomePage = ({ onGameSelect, onInfoSelect }) => {
           jackpot: '500 millió Ft',
           nextDraw: 'Vasárnap',
           ticketPrice: '400',
-          logo: '/images/hatos.png',
+          logo: '/images/hatos.jpg',
           color: '#7c3aed',
         },
       ]);
@@ -223,7 +223,7 @@ const HomePage = ({ onGameSelect, onInfoSelect }) => {
               <h6 className="fw-bold mb-3 text-warning">Kapcsolat</h6>
               <ul className="list-unstyled">
                 <li className="mb-2 d-flex align-items-center gap-2 text-white-50 small">
-                  <Mail size={14} /> info@fortunalotto.hu
+                  <Mail size={14} /> fortunalotto343@gmail.com
                 </li>
                 <li className="mb-2 d-flex align-items-center gap-2 text-white-50 small">
                   <Phone size={14} /> +36 1 234 5678

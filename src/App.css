@@ -428,3 +428,7 @@ body {
   .number-cell { font-size: 9px; min-height: 22px; }
   .joker-input { font-size: 11px; padding: 6px 4px; }
 }
+
+.hero-gradient::before {
+  pointer-events: none;
+}

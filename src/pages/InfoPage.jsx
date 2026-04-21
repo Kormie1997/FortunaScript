@@ -220,6 +220,54 @@ const PAGES = {
       },
     ]
   },
+
+  'hogyan-mukodik': {
+    icon: HelpCircle,
+    color: '#f59e0b',
+    bg: '#fef3c7',
+    title: 'Hogyan működik?',
+    badge: 'Útmutató',
+    sections: [
+      {
+        title: '1. Regisztrálj és jelentkezz be',
+        content: 'Hozz létre egy fiókot a Fortuna Lottón! Add meg a felhasználóneved, email címed és jelszavad. Erősítsd meg az email címedet a kapott levélben, majd jelentkezz be.'
+      },
+      {
+        title: '2. Töltsd fel az egyenleged',
+        content: 'A játékhoz egyenleg szükséges. Kattints a "Feltöltés" gombra a fiókoldalon, add meg a kívánt összeget és fizess bankkártyával. Az összeg azonnal jóváíródik az egyenlegeden.'
+      },
+      {
+        title: '3. Válassz játékot',
+        content: 'A főoldalon 6 különböző lottójáték közül választhatsz: Ötös Lottó, Hatos Lottó, Skandináv Lottó, Eurojackpot, Joker és Kenó. Mindegyik játéknak saját szabályai és nyereményosztályai vannak.'
+      },
+      {
+        title: '4. Töltsd ki a szelvényt',
+        content: 'Válaszd ki a számaidat a rácsból, vagy használd a "Gyorstipp" gombot véletlenszerű számokhoz. Több mezőt is kitölthetsz egy szelvényen. Gépi játékokat is generálhatsz automatikusan.'
+      },
+      {
+        title: '5. Add le a szelvényt',
+        content: 'Kattints a "Kosárba" gombra ha később szeretnél fizetni, vagy a "Megjátszom" gombra az azonnali vásárláshoz. Az egyenlegedből automatikusan levonódik a szelvény ára.'
+      },
+      {
+        title: '6. Várj a sorsolásra',
+        content: 'Minden játéknak saját sorsolási menetrendje van. A sorsolás után az eredmények automatikusan feldolgozásra kerülnek, a nyeremények pedig azonnal jóváíródnak az egyenlegeden.'
+      },
+      {
+        title: '7. Vedd fel a nyereményed',
+        content: 'A kisebb nyeremények automatikusan jóváíródnak az egyenlegeden. Az egyenlegedből bármikor utalhatsz a bankszámládra. Nagyobb nyeremények esetén személyes azonosítás szükséges.'
+      },
+      {
+        title: '💡 Tippek kezdőknek',
+        list: [
+          'Kezdd kisebb tétekkel amíg megismered a játékokat.',
+          'Használd a Gyorstipp funkciót ha nem tudod milyen számokat válassz.',
+          'Ellenőrizd rendszeresen a szelvényeidet a Fiókom oldalon.',
+          'Állíts be befizetési limitet a felelős játékért.',
+          'Játssz szórakozásból, ne bevételi forrásként tekints rá!',
+        ]
+      },
+    ]
+  },
 };
 
 const InfoPage = ({ page, onBack }) => {
