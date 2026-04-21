@@ -152,10 +152,8 @@ function App() {
       if (existingIndex >= 0) {
         const updated = [...prev];
         updated[existingIndex].quantity += item.quantity;
-        toast.success('Mennyiség frissítve!');
         return updated;
       }
-      toast.success('Hozzáadva a kosárhoz!');
       return [...prev, { ...item, id: Date.now() }];
     });
   };

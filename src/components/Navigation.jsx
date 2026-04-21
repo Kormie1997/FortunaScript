@@ -37,31 +37,35 @@ const Navigation = ({ user, currentView, onViewChange, onLogout, cartCount, onCa
         <Navbar.Toggle onClick={() => setExpanded(!expanded)} />
 
         <Navbar.Collapse>
-          <Nav className="me-auto">
+        <Nav className="me-auto">
+          <Nav.Link 
+            onClick={() => { onViewChange('home'); setExpanded(false); }}
+            active={currentView === 'home'}
+          >
+            <Home size={18} className="me-1" /> Főoldal
+          </Nav.Link>
+          <Nav.Link 
+            onClick={() => { onViewChange('account'); setExpanded(false); }}
+            active={currentView === 'account'}
+          >
+            <User size={18} className="me-1" /> Fiókom
+          </Nav.Link>
+          {isAdmin && (
             <Nav.Link 
-              onClick={() => { onViewChange('home'); setExpanded(false); }}
-              active={currentView === 'home'}
+              onClick={() => { onViewChange('admin'); setExpanded(false); }}
+              active={currentView === 'admin'}
             >
-              <Home size={18} className="me-1" /> Főoldal
+              <Shield size={18} className="me-1" /> Admin
             </Nav.Link>
-            <Nav.Link 
-              onClick={() => { onViewChange('account'); setExpanded(false); }}
-              active={currentView === 'account'}
-            >
-              <User size={18} className="me-1" /> Fiókom
-            </Nav.Link>
-            {isAdmin && (
-              <Nav.Link 
-                onClick={() => { onViewChange('admin'); setExpanded(false); }}
-                active={currentView === 'admin'}
-              >
-                <Shield size={18} className="me-1" /> Admin
-              </Nav.Link>
-            )}
-          </Nav>
+          )}
+        </Nav>
+
+        {/* Mobilon szürkés elválasztó */}
+        <div className={`d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 ${expanded ? 'mt-3 pt-3 border-top' : ''}`}
+          style={expanded ? { background: '#f8f9fa', borderRadius: '8px', padding: '12px' } : {}}>
 
           {/* Egyenleg */}
-          <div className="d-flex align-items-center gap-2 bg-success bg-opacity-10 text-success px-3 py-1 rounded-pill me-3">
+          <div className="d-flex align-items-center gap-2 bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
             <Wallet size={18} />
             <span className="fw-semibold">{user?.balance?.toLocaleString() || '0'} Ft</span>
           </div>
@@ -69,8 +73,8 @@ const Navigation = ({ user, currentView, onViewChange, onLogout, cartCount, onCa
           {/* Kosár */}
           <Button 
             variant="outline-warning" 
-            className="position-relative me-2"
-            onClick={onCartClick}
+            className="position-relative"
+            onClick={() => { onCartClick(); setExpanded(false); }}
           >
             <ShoppingCart size={20} />
             {cartCount > 0 && (
@@ -83,11 +87,12 @@ const Navigation = ({ user, currentView, onViewChange, onLogout, cartCount, onCa
           {/* Kijelentkezés */}
           <Button 
             variant="outline-danger" 
-            onClick={onLogout}
+            onClick={() => { onLogout(); setExpanded(false); }}
           >
             <LogOut size={18} className="me-1" /> Kilépés
           </Button>
-        </Navbar.Collapse>
+        </div>
+      </Navbar.Collapse>
       </Container>
     </Navbar>
   );

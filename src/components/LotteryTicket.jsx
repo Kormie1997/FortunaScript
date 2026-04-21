@@ -193,13 +193,13 @@ function LotteryTicket({ game, onBack, user, onAddToCart }) {
   };
 
   const handleAddToCart = () => {
-    if (!validateBeforeAction()) return;
-    const tickets = buildTicketsPayload();
-    if (!tickets.length) return;
-    tickets.forEach(t => onAddToCart?.(t));
-    toast.success(`${tickets.length} szelvény kosárba helyezve!`);
-    resetForm();
-  };
+  if (!validateBeforeAction()) return;
+  const tickets = buildTicketsPayload();
+  if (!tickets.length) return;
+  tickets.forEach(t => onAddToCart?.(t));
+  toast.success(`${tickets.length} szelvény kosárba helyezve!`); 
+  resetForm();
+};
 
   const handlePlay = async () => {
     if (!validateBeforeAction()) return;

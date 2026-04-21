@@ -203,6 +203,7 @@ const HomePage = ({ onGameSelect, onInfoSelect }) => {
                 { label: 'Adatvédelmi irányelvek',  key: 'adatvedelem'    },
                 { label: 'Felhasználási feltételek',key: 'feltetelek'     },
                 { label: 'GYIK',                    key: 'gyik'           },
+                { label: 'Rólunk', key: 'rolunk' },
               ].map(item => (
                 <li key={item.key} className="mb-2">
                   <span
@@ -227,6 +228,7 @@ const HomePage = ({ onGameSelect, onInfoSelect }) => {
                 </li>
                 <li className="mb-2 d-flex align-items-center gap-2 text-white-50 small">
                   <Phone size={14} /> +36 1 234 5678
+                  
                 </li>
               </ul>
               <div className="mt-3 p-2 rounded-2 border border-secondary">

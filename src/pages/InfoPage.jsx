@@ -268,6 +268,42 @@ const PAGES = {
       },
     ]
   },
+    'rolunk': {
+    icon: Shield,
+    color: '#0ea5e9',
+    bg: '#e0f2fe',
+    title: 'Rólunk',
+    badge: 'Cégünk',
+    sections: [
+      {
+        title: 'Kik vagyunk?',
+        content: 'A Fortuna Lotto Magyarország egyik legmegbízhatóbb online lottó platformja. 2026-ben alapítottuk azzal a céllal, hogy a hagyományos lottójátékokat modern, biztonságos és kényelmes digitális formában tegyük elérhetővé minden magyar játékos számára.'
+      },
+      {
+        title: 'Küldetésünk',
+        content: 'Célunk egy olyan platform működtetése, ahol a játékosok biztonságban érezhetik magukat, élvezhetik a szerencsejátékok izgalmát, miközben felelősségteljesen játszanak. Átlátható működést, gyors kifizetéseket és kiváló ügyfélszolgálatot biztosítunk.'
+      },
+      {
+        title: 'Miért válassz minket?',
+        list: [
+          'Biztonságos és titkosított fizetési rendszer.',
+          'Gyors nyeremény kifizetések — kisebb összegek azonnal jóváíródnak.',
+          'Magyar nyelvű ügyfélszolgálat hétköznapokon 9-17 óra között.',
+          'Felelős játék eszközök — limitek, önkizárás lehetősége.',
+          'Széles játékválaszték: Ötös Lottó, Eurojackpot, Kenó és még sok más.',
+          'Új játékosoknak 5000 Ft bónusz az első befizetéshez!',
+        ]
+      },
+      {
+        title: 'Biztonság és megbízhatóság',
+        content: 'Platformunk SSL titkosítással védett, adatait a GDPR előírásainak megfelelően kezeljük. Működésünk a magyar szerencsejáték-szabályozás teljes körű betartásával történik.'
+      },
+      {
+        title: 'Kapcsolat',
+        content: 'Kérdése van? Keressen minket bátran! E-mail: fortunalotto343@gmail.com | Telefon: +36 1 234 5678 | Cím: 1051 Budapest, Váci utca 1.'
+      },
+    ]
+  },
 };
 
 const InfoPage = ({ page, onBack }) => {

@@ -688,10 +688,10 @@ const confirmDeleteDraw = async () => {
           {/*FELHASZNÁLÓK*/}
           {activeTab === 'users' && (
             <>
-              <div className="d-flex justify-content-between align-items-center mb-3">
+              <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                 <h5 className="fw-bold mb-0">Felhasználók kezelése</h5>
-                <div className="d-flex gap-2">
-                  <InputGroup style={{ width: '280px' }}>
+                <div className="d-flex gap-2 w-100 w-md-auto">
+                  <InputGroup className="flex-grow-1">
                     <InputGroup.Text><Search size={16} /></InputGroup.Text>
                     <Form.Control
                       placeholder="Keresés névre vagy emailre..."
@@ -719,52 +719,54 @@ const confirmDeleteDraw = async () => {
                     </div>
                   ) : (
                     filteredUsers.map(u => (
-                      <div key={u.id} className="border rounded-3 p-3 d-flex justify-content-between align-items-center">
-                        <div className="d-flex align-items-center gap-3">
-                          <div
-                            className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
-                            style={{ width: '42px', height: '42px', background: 'linear-gradient(135deg, #f59e0b, #ea580c)', flexShrink: 0 }}
-                          >
-                            {u.username?.[0]?.toUpperCase()}
-                          </div>
-                          <div>
-                            <div className="d-flex align-items-center gap-2">
-                              <span className="fw-medium">{u.username}</span>
-                              {u.roles?.includes('admin') && <Badge bg="danger" className="small">Admin</Badge>}
-                              {!u.emailConfirmed && <Badge bg="warning" text="dark" className="small">Email nem megerősített</Badge>}
+                      <div key={u.id} className="border rounded-3 p-3">
+                        <div className="d-flex justify-content-between align-items-start gap-2">
+                          {/* Bal oldal: avatar + adatok */}
+                          <div className="d-flex align-items-center gap-2 flex-grow-1 min-width-0">
+                            <div
+                              className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0"
+                              style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg, #f59e0b, #ea580c)', fontSize: '14px' }}
+                            >
+                              {u.username?.[0]?.toUpperCase()}
                             </div>
-                            <p className="text-muted small mb-0">{u.email}</p>
-                            <p className="text-muted small mb-0">
-                              Regisztráció: {new Date(u.createdAt).toLocaleDateString('hu-HU')}
-                              {u.lastLoginAt && ` · Utolsó belépés: ${new Date(u.lastLoginAt).toLocaleDateString('hu-HU')}`}
-                            </p>
+                            <div style={{ minWidth: 0 }}>
+                              <div className="d-flex align-items-center gap-1 flex-wrap">
+                                <span className="fw-medium">{u.username}</span>
+                                {u.roles?.includes('admin') && <Badge bg="danger" className="small">Admin</Badge>}
+                                {!u.emailConfirmed && <Badge bg="warning" text="dark" className="small">Email nem megerősített</Badge>}
+                              </div>
+                              <p className="text-muted small mb-0 text-truncate">{u.email}</p>
+                              <p className="text-muted small mb-0">
+                                {new Date(u.createdAt).toLocaleDateString('hu-HU', { timeZone: 'Europe/Budapest' })}
+                                {u.lastLoginAt && ` · ${new Date(u.lastLoginAt).toLocaleDateString('hu-HU', { timeZone: 'Europe/Budapest' })}`}
+                              </p>
+                            </div>
                           </div>
-                        </div>
 
-                        <div className="d-flex align-items-center gap-3">
-                          <div className="text-end">
-                            <p className="fw-bold mb-0">{(u.balance || 0).toLocaleString()} Ft</p>
-                            <Badge bg={u.status === 'active' ? 'success' : 'danger'}>
+                          {/* Jobb oldal: egyenleg + gombok */}
+                          <div className="d-flex flex-column align-items-end gap-1 flex-shrink-0">
+                            <p className="fw-bold mb-0 small">{(u.balance || 0).toLocaleString()} Ft</p>
+                            <Badge bg={u.status === 'active' ? 'success' : 'danger'} className="small">
                               {u.status === 'active' ? 'Aktív' : 'Kitiltva'}
                             </Badge>
-                          </div>
-                          <div className="d-flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline-success"
-                              onClick={() => { setTopUpUser(u); setShowTopUp(true); }}
-                              title="Egyenleg feltöltés"
-                            >
-                              <CreditCard size={14} />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant={u.status === 'banned' ? 'outline-success' : 'outline-danger'}
-                              onClick={() => handleBanUser(u.id, u.status)}
-                              title={u.status === 'banned' ? 'Feloldás' : 'Kitiltás'}
-                            >
-                              {u.status === 'banned' ? <CheckCircle size={14} /> : <Ban size={14} />}
-                            </Button>
+                            <div className="d-flex gap-1 mt-1">
+                              <Button
+                                size="sm"
+                                variant="outline-success"
+                                onClick={() => { setTopUpUser(u); setShowTopUp(true); }}
+                                title="Egyenleg feltöltés"
+                              >
+                                <CreditCard size={13} />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant={u.status === 'banned' ? 'outline-success' : 'outline-danger'}
+                                onClick={() => handleBanUser(u.id, u.status)}
+                                title={u.status === 'banned' ? 'Feloldás' : 'Kitiltás'}
+                              >
+                                {u.status === 'banned' ? <CheckCircle size={13} /> : <Ban size={13} />}
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -778,7 +780,7 @@ const confirmDeleteDraw = async () => {
           {/*SZELVÉNYEK*/}
           {activeTab === 'tickets' && (
             <>
-              <div className="d-flex justify-content-between align-items-center mb-3 text=black">
+              <div className="d-flex justify-content-between align-items-center mb-3">
                 <h5 className="fw-bold mb-0">Összes szelvény</h5>
                 <Button variant="outline-secondary" size="sm" onClick={loadTickets}>
                   <RefreshCw size={16} className="me-1" /> Frissítés
@@ -799,23 +801,26 @@ const confirmDeleteDraw = async () => {
                     </div>
                   ) : (
                     tickets.map(t => (
-                      <div key={t.id} className="border rounded-3 p-3 d-flex justify-content-between align-items-center">
-                        <div>
-                          <div className="d-flex align-items-center gap-2 mb-1">
+                      <div key={t.id} className="border rounded-3 p-3 d-flex justify-content-between align-items-start gap-2">
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div className="d-flex align-items-center gap-2 mb-1 flex-wrap">
                             <span className="fw-bold text-primary small">{t.ticketCode}</span>
                             <Badge bg={t.status === 'active' ? 'warning' : t.status === 'won' ? 'success' : 'secondary'} text={t.status === 'active' ? 'dark' : undefined}>
                               {t.status === 'active' ? 'Aktív' : t.status === 'won' ? 'Nyertes 🎉' : 'Lejátszva'}
                             </Badge>
                           </div>
-                          <p className="text-muted small mb-0">
-                            👤 {t.username} · 🎮 {GAME_LABELS[t.gameType] || t.gameType} · 🔢 {t.fieldsNumbers || '-'}
+                          <p className="text-muted small mb-0 text-truncate">
+                            👤 {t.username} · 🎮 {GAME_LABELS[t.gameType] || t.gameType}
+                          </p>
+                          <p className="text-muted small mb-0 text-truncate">
+                            🔢 {t.fieldsNumbers || '-'}
                           </p>
                           <p className="text-muted small mb-0">
-                            📅 {new Date(t.boughtAt).toLocaleString('hu-HU')}
+                            📅 {new Date(t.boughtAt).toLocaleString('hu-HU', { timeZone: 'Europe/Budapest' })}
                           </p>
                         </div>
-                        <div className="text-end">
-                          <p className="fw-bold mb-0">{(t.totalPrice || 0).toLocaleString()} Ft</p>
+                        <div className="text-end flex-shrink-0">
+                          <p className="fw-bold mb-0 small">{(t.totalPrice || 0).toLocaleString()} Ft</p>
                           {t.totalWinAmount > 0 && (
                             <p className="text-success small fw-bold mb-0">+{t.totalWinAmount.toLocaleString()} Ft</p>
                           )}

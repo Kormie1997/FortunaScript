@@ -432,3 +432,15 @@ body {
 .hero-gradient::before {
   pointer-events: none;
 }
+
+.nav-link.active {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border-radius: 8px;
+  color: #ea580c !important;
+  font-weight: 600;
+}
+
+.nav-link:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 8px;
+}
