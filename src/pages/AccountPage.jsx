@@ -163,10 +163,14 @@ const AccountPage = ({ user, onLogout, onBalanceUpdate }) => {
 
       <Row className="g-4 mb-4">
         <Col md={6}>
-          <Card className="border-0 shadow-sm card-orange text-white h-100">
+          <Card className="border-0 shadow-sm text-white h-100"
+            style={{ background: 'linear-gradient(135deg, #fb923c, #ea580c)' }}>
             <Card.Body>
               <div className="d-flex align-items-center gap-3">
-                <div className="bg-white bg-opacity-20 p-3 rounded-3"><User size={32} /></div>
+                <div className="bg-white bg-opacity-20 p-3 rounded-3">
+                  <User size={32} color="black" />
+                  <i class="bi bi-person-fill-check"></i>
+                </div>
                 <div>
                   <p className="opacity-75 mb-1">Üdvözlünk,</p>
                   <h3 className="fw-bold mb-0">{user?.username}</h3>
@@ -177,10 +181,14 @@ const AccountPage = ({ user, onLogout, onBalanceUpdate }) => {
           </Card>
         </Col>
         <Col md={6}>
-          <Card className="border-0 shadow-sm card-green text-white h-100">
+          <Card className="border-0 shadow-sm text-white h-100"
+            style={{ background: 'linear-gradient(135deg, #18af78, #035c3e)' }}>
             <Card.Body>
               <div className="d-flex align-items-center gap-3">
-                <div className="bg-white bg-opacity-20 p-3 rounded-3"><CreditCard size={32} /></div>
+                <div className="bg-white bg-opacity-20 p-3 rounded-3">
+                  <CreditCard size={32} color="black" />
+                  <i class="bi bi-credit-card-2-back-fill"></i>
+                </div>
                 <div className="flex-grow-1">
                   <p className="opacity-75 mb-1">Egyenleged</p>
                   <h2 className="fw-bold mb-0">{(user?.balance || 0).toLocaleString()} Ft</h2>

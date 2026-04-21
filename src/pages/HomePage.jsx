@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
-import { Sparkles, Zap, Gem, Mail, Phone, Facebook, Instagram, Twitter} from 'lucide-react';
+import { Sparkles, Zap, Gem, Mail, Phone} from 'lucide-react';
 import api from '../services/api';
 
 const HomePage = ({ onGameSelect, onInfoSelect }) => {
@@ -105,8 +105,17 @@ const HomePage = ({ onGameSelect, onInfoSelect }) => {
               Egyszerű, gyors és biztonságos online fogadás.
             </p>
             <div className="d-flex gap-3">
-              <Button variant="light" size="lg">Játék indítása</Button>
-              <Button variant="outline-light" size="lg">Hogyan működik?</Button>
+              <Button variant="light" size="lg" className="fw-bold"
+                onClick={() => {
+                  const random = games[Math.floor(Math.random() * games.length)];
+                  onGameSelect(random);
+                }}>
+                Játék indítása
+              </Button>
+              <Button variant="outline-light" size="lg"
+                onClick={() => onInfoSelect('hogyan-mukodik')}>
+                Hogyan működik?
+              </Button>
             </div>
           </Col>
         </Row>
@@ -163,11 +172,6 @@ const HomePage = ({ onGameSelect, onInfoSelect }) => {
               <p className="text-white-50 small">
                 Magyarország megbízható online lottó platformja. Játssz felelősségteljesen!
               </p>
-              <div className="d-flex gap-3 mt-3">
-                <a href="#" className="text-white-50 text-decoration-none"><Facebook size={20} /></a>
-                <a href="#" className="text-white-50 text-decoration-none"><Instagram size={20} /></a>
-                <a href="#" className="text-white-50 text-decoration-none"><Twitter size={20} /></a>
-              </div>
             </Col>
 
             <Col md={2}>

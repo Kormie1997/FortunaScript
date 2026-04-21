@@ -1,8 +1,23 @@
 {
-  "dependencies": {
-    "jwt-decode": "^4.0.0"
-  },
+  "name": "FortunaCasinoFrontend",
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "vite"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "jwt-decode": "^4.0.0",
+    "lucide-react": "^1.8.0",
+    "react": "^19.2.5",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "^19.2.5",
+    "sonner": "^2.0.7"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.1",
+    "vite": "^8.0.9"
   }
 }
