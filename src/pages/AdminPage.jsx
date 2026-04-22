@@ -112,6 +112,15 @@ const AdminPage = ({ user }) => {
   if (activeTab === 'draws') loadDraws();
   }, [drawFilter]);
 
+  //Szelvény vásárlás lock
+  useEffect(() => {
+  if (activeTab === 'settings') {
+    api.admin.getDrawLock()
+      .then(data => setSystemStatus(prev => ({ ...prev, drawLocked: data.isLocked })))
+      .catch(() => {});
+  }
+}, [activeTab]);
+
   const loadStats = async () => {
     setLoadingStats(true);
     try {
@@ -191,14 +200,14 @@ const AdminPage = ({ user }) => {
   };
 
   const toggleDrawLock = async () => {
-    try {
-      await api.admin.toggleDrawLock();
-      setSystemStatus(prev => ({ ...prev, drawLocked: !prev.drawLocked }));
-      toast.info('Sorsolás állapota megváltozott');
-    } catch (err) {
-      toast.error('Hiba történt');
-    }
-  };
+  try {
+    const result = await api.admin.toggleDrawLock();
+    setSystemStatus(prev => ({ ...prev, drawLocked: result.isLocked }));
+    toast.success(result.isLocked ? '🔒 Sorsolás zárolva!' : '🔓 Zárolás feloldva!');
+  } catch {
+    toast.error('Hiba történt');
+  }
+};
 
   const runBackup = async () => {
     try {

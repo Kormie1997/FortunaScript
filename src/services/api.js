@@ -42,7 +42,8 @@ const api = {
       body: JSON.stringify({ amount })
     }),
     toggleMaintenance: () => Promise.resolve(),
-    toggleDrawLock:    () => Promise.resolve(),
+    toggleDrawLock: () => api.request('/admin/settings/draw-lock/toggle', { method: 'POST' }),
+    getDrawLock:    () => api.request('/admin/settings/draw-lock'),
     backup:            () => Promise.resolve(),
   },
 
