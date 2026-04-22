@@ -235,7 +235,7 @@ const AccountPage = ({ user, onLogout, onBalanceUpdate }) => {
                         </div>
                         <p className="text-muted small mb-1">🎮 {ticket.gameType || 'Lottó'}</p>
                         <p className="text-muted small mb-1">🔢 <strong>{ticket.fieldsNumbers || '-'}</strong></p>
-                        <p className="text-muted small mb-0">📅 {ticket.boughtAt ? new Date(ticket.boughtAt).toLocaleString('hu-HU') : '-'}</p>
+                        <p className="text-muted small mb-0">📅 {ticket.boughtAt ? new Date(ticket.boughtAt).toLocaleString('hu-HU', { timeZone: 'Europe/Budapest' }) : '-'}</p>
                       </div>
                       <div className="text-end">
                         <p className="fw-bold mb-1">{(ticket.totalPrice || 0).toLocaleString()} Ft</p>
@@ -267,7 +267,7 @@ const AccountPage = ({ user, onLogout, onBalanceUpdate }) => {
                       <div>
                         <p className="fw-medium mb-1">{getTransactionLabel(t.type)}</p>
                         <p className="text-muted small mb-1">{t.description}</p>
-                        <p className="text-muted small mb-0">{new Date(t.createdAt).toLocaleString('hu-HU')}</p>
+                        <p className="text-muted small mb-0">{new Date(t.createdAt).toLocaleString('hu-HU', { timeZone: 'Europe/Budapest' })}</p>
                       </div>
                       <div className="text-end">
                         <p className={`fw-bold fs-5 mb-1 ${isPos ? 'text-success' : 'text-danger'}`}>
