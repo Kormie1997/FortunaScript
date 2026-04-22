@@ -10,7 +10,7 @@ const PAGES = {
     badge: 'Szabályzat',
     sections: [
       {
-        title: 'Üdvözöljük a Fortuna Lottón!',
+        title: 'Üdvözöljük a FortunaScript Online Lottózójában!',
         content: `Magyarországon elérhető online lottó platformunkon különféle számsorsjátékokat játszhat, ahol saját számokat választhat, vagy gépi (véletlen) generálást kérhet. Minden játék egyenlegéről kerül levonásra a tét, és csak akkor érvényes, ha a befizetés sikeresen megtörtént.`
       },
       {
@@ -28,6 +28,10 @@ const PAGES = {
         content: '90 számból kell 5-öt kiválasztani. A cél, hogy minél többet eltaláljon a hetente sorsolt 5 nyerőszám közül. Már 2 találattal is nyerhet. A főnyereményt az 5 találat jelenti. Játszható 1 vagy több hétre előre, saját számokkal vagy gépi generálással.'
       },
       {
+        title: '🎱 Hatos Lottó',
+        content: '45 számból kell 6-ot kiválasztani. Már 3 találattal is nyerhet. A főnyereményt a 6 találat jelenti. Játszható saját számokkal vagy gépi generálással, több sorsolásra előre.'
+      },
+      {
         title: '🎱 Skandináv Lottó',
         content: '35 számból kell 7-et kiválasztani. Hetente két sorsolás történik. Legalább 4 találat szükséges a nyereményhez. A főnyereményt a 7 találat jelenti. Játszható saját számokkal vagy véletlen generálással, 1 vagy 5 hétre.'
       },
@@ -43,10 +47,6 @@ const PAGES = {
         title: '🎲 Kenó',
         content: '80 számból legfeljebb 10 számot jelölhet meg. Naponta többször sorsolnak 20 nyerőszámot. Minél több találat, annál nagyobb a nyeremény. Bizonyos tétszámoknál akkor is nyerhet, ha 0 találata van.'
       },
-      {
-        title: '🎱 Hatos Lottó',
-        content: '45 számból kell 6-ot kiválasztani. Már 3 találattal is nyerhet. A főnyereményt a 6 találat jelenti. Játszható saját számokkal vagy gépi generálással, több sorsolásra előre.'
-      },
     ]
   },
 
@@ -59,7 +59,7 @@ const PAGES = {
     sections: [
       {
         title: 'Hogyan kapja meg nyereményét?',
-        content: 'Nyereményeit az alábbi módon veheti fel a Fortuna Lottón:'
+        content: 'Nyereményeit az alábbi módon veheti fel a FortunaScripten:'
       },
       {
         title: 'Kisebb nyeremények (600 000 Ft alatt)',
@@ -123,7 +123,7 @@ const PAGES = {
     sections: [
       {
         title: 'Adatvédelmi elkötelezettségünk',
-        content: 'A Fortuna Lotto elkötelezett az Ön személyes adatainak védelme iránt, és a GDPR valamint a magyar adatvédelmi törvények teljes körű betartásával kezeli azokat.'
+        content: 'A FortunaScript elkötelezett az Ön személyes adatainak védelme iránt, és a GDPR valamint a magyar adatvédelmi törvények teljes körű betartásával kezeli azokat.'
       },
       {
         title: 'Milyen adatokat kezelünk?',
@@ -149,7 +149,7 @@ const PAGES = {
       },
       {
         title: 'Kapcsolat',
-        content: 'Kéréseit az adatvedelem@fortunalotto.hu címre küldheti. Adattovábbítás csak jogszabályi kötelezettség vagy szolgáltatók (pl. fizetési szolgáltatók) felé, szerződéses garanciákkal történik.'
+        content: 'Kéréseit az adatvedelem@fortunascript.hu címre küldheti. Adattovábbítás csak jogszabályi kötelezettség vagy szolgáltatók (pl. fizetési szolgáltatók) felé, szerződéses garanciákkal történik.'
       },
     ]
   },
@@ -163,7 +163,7 @@ const PAGES = {
     sections: [
       {
         title: 'Általános rendelkezések',
-        content: 'Ezen feltételek szabályozzák a Fortuna Lotto oldal használatát. Az oldal használatával Ön elfogadja ezeket a feltételeket. Kérjük, figyelmesen olvassa el őket.'
+        content: 'Ezen feltételek szabályozzák a FortunaScript Online Lottózó oldal használatát. Az oldal használatával Ön elfogadja ezeket a feltételeket. Kérjük, figyelmesen olvassa el őket.'
       },
       {
         title: 'Főbb szabályok',
@@ -212,7 +212,7 @@ const PAGES = {
       },
       {
         title: 'Van ügyfélszolgálat?',
-        content: 'Igen! Elérhetőségek: E-mail: support@fortunalotto.hu | Telefon: +36 1 234 5678 | Hétfőtől péntekig 9:00–17:00 között.'
+        content: 'Igen! Elérhetőségek: E-mail: support@fortunascript.hu | Telefon: +36 1 234 5678 | Hétfőtől péntekig 9:00–17:00 között.'
       },
       {
         title: 'Mennyi idő alatt kapom meg a nyereményemet?',
@@ -230,7 +230,7 @@ const PAGES = {
     sections: [
       {
         title: '1. Regisztrálj és jelentkezz be',
-        content: 'Hozz létre egy fiókot a Fortuna Lottón! Add meg a felhasználóneved, email címed és jelszavad. Erősítsd meg az email címedet a kapott levélben, majd jelentkezz be.'
+        content: 'Hozz létre egy fiókot a FortunaScript Online Lottózóban! Add meg a felhasználóneved, email címed és jelszavad. Erősítsd meg az email címedet a kapott levélben, majd jelentkezz be.'
       },
       {
         title: '2. Töltsd fel az egyenleged',
@@ -277,7 +277,7 @@ const PAGES = {
     sections: [
       {
         title: 'Kik vagyunk?',
-        content: 'A Fortuna Lotto Magyarország egyik legmegbízhatóbb online lottó platformja. 2026-ben alapítottuk azzal a céllal, hogy a hagyományos lottójátékokat modern, biztonságos és kényelmes digitális formában tegyük elérhetővé minden magyar játékos számára.'
+        content: 'A FortunaScript Magyarország egyik legmegbízhatóbb online lottó platformja. 2026-ben alapítottuk azzal a céllal, hogy a hagyományos lottójátékokat modern, biztonságos és kényelmes digitális formában tegyük elérhetővé minden magyar játékos számára.'
       },
       {
         title: 'Küldetésünk',
