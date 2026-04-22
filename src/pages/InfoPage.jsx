@@ -10,7 +10,7 @@ const PAGES = {
     badge: 'Szabályzat',
     sections: [
       {
-        title: 'Üdvözöljük a FortunaScript Online Lottózójában!',
+        title: 'Üdvözöljük a FortunaLotto Online Lottózójában!',
         content: `Magyarországon elérhető online lottó platformunkon különféle számsorsjátékokat játszhat, ahol saját számokat választhat, vagy gépi (véletlen) generálást kérhet. Minden játék egyenlegéről kerül levonásra a tét, és csak akkor érvényes, ha a befizetés sikeresen megtörtént.`
       },
       {
@@ -59,7 +59,7 @@ const PAGES = {
     sections: [
       {
         title: 'Hogyan kapja meg nyereményét?',
-        content: 'Nyereményeit az alábbi módon veheti fel a FortunaScripten:'
+        content: 'Nyereményeit az alábbi módon veheti fel a FortunaLotto-n:'
       },
       {
         title: 'Kisebb nyeremények (600 000 Ft alatt)',
@@ -123,7 +123,7 @@ const PAGES = {
     sections: [
       {
         title: 'Adatvédelmi elkötelezettségünk',
-        content: 'A FortunaScript elkötelezett az Ön személyes adatainak védelme iránt, és a GDPR valamint a magyar adatvédelmi törvények teljes körű betartásával kezeli azokat.'
+        content: 'A FortunaLotto elkötelezett az Ön személyes adatainak védelme iránt, és a GDPR valamint a magyar adatvédelmi törvények teljes körű betartásával kezeli azokat.'
       },
       {
         title: 'Milyen adatokat kezelünk?',
@@ -149,7 +149,7 @@ const PAGES = {
       },
       {
         title: 'Kapcsolat',
-        content: 'Kéréseit az adatvedelem@fortunascript.hu címre küldheti. Adattovábbítás csak jogszabályi kötelezettség vagy szolgáltatók (pl. fizetési szolgáltatók) felé, szerződéses garanciákkal történik.'
+        content: 'Kéréseit az fortunalotto343@gmail.com címre küldheti. Adattovábbítás csak jogszabályi kötelezettség vagy szolgáltatók (pl. fizetési szolgáltatók) felé, szerződéses garanciákkal történik.'
       },
     ]
   },
@@ -163,7 +163,7 @@ const PAGES = {
     sections: [
       {
         title: 'Általános rendelkezések',
-        content: 'Ezen feltételek szabályozzák a FortunaScript Online Lottózó oldal használatát. Az oldal használatával Ön elfogadja ezeket a feltételeket. Kérjük, figyelmesen olvassa el őket.'
+        content: 'Ezen feltételek szabályozzák a FortunaLotto Online Lottózó oldal használatát. Az oldal használatával Ön elfogadja ezeket a feltételeket. Kérjük, figyelmesen olvassa el őket.'
       },
       {
         title: 'Főbb szabályok',
@@ -212,7 +212,7 @@ const PAGES = {
       },
       {
         title: 'Van ügyfélszolgálat?',
-        content: 'Igen! Elérhetőségek: E-mail: support@fortunascript.hu | Telefon: +36 1 234 5678 | Hétfőtől péntekig 9:00–17:00 között.'
+        content: 'Igen! Elérhetőségek: E-mail: fortunalotto343@gmail.com | Telefon: +36 1 234 5678 | Hétfőtől péntekig 9:00–17:00 között.'
       },
       {
         title: 'Mennyi idő alatt kapom meg a nyereményemet?',
@@ -230,7 +230,7 @@ const PAGES = {
     sections: [
       {
         title: '1. Regisztrálj és jelentkezz be',
-        content: 'Hozz létre egy fiókot a FortunaScript Online Lottózóban! Add meg a felhasználóneved, email címed és jelszavad. Erősítsd meg az email címedet a kapott levélben, majd jelentkezz be.'
+        content: 'Hozz létre egy fiókot a FortunaLotto-n! Add meg a felhasználóneved, email címed és jelszavad. Erősítsd meg az email címedet a kapott levélben, majd jelentkezz be.'
       },
       {
         title: '2. Töltsd fel az egyenleged',
@@ -277,7 +277,7 @@ const PAGES = {
     sections: [
       {
         title: 'Kik vagyunk?',
-        content: 'A FortunaScript Magyarország egyik legmegbízhatóbb online lottó platformja. 2026-ben alapítottuk azzal a céllal, hogy a hagyományos lottójátékokat modern, biztonságos és kényelmes digitális formában tegyük elérhetővé minden magyar játékos számára.'
+        content: 'A FortunaLotto Kormos Levente, Takács Bence, Varga Bálint közös víziójából született még tavaly áprilisban. Már akkor egyértelmű volt számunkra, hogy egy olyan digitális platformot szeretnénk létrehozni, amely új szintre emeli a lottózás élményét Magyarországon. 2026-ban indítottuk el a FortunaLotto-t azzal a céllal, hogy a hagyományos lottójátékokat egy modern, biztonságos és felhasználóközpontú online környezetbe helyezzük. Fókuszunk a megbízhatóságon, az átlátható működésen és a gördülékeny felhasználói élményen van. A FortunaLotto nem csupán egy platform – egy új szemlélet a lottózás világában. Olyan megoldást építünk, ahol a technológia és az élmény kéz a kézben jár.'
       },
       {
         title: 'Küldetésünk',
@@ -300,7 +300,7 @@ const PAGES = {
       },
       {
         title: 'Kapcsolat',
-        content: 'Kérdése van? Keressen minket bátran! E-mail: fortunalotto343@gmail.com | Telefon: +36 1 234 5678 | Cím: 1051 Budapest, Váci utca 1.'
+        content: 'Kérdése van? Keressen minket bátran! E-mail: fortunalotto343@gmail.com | Telefon: +36 1 234 5678 | Cím: 3525 Miskolc, Városház tér 87.'
       },
     ]
   },

@@ -66,9 +66,13 @@ const LoginPage = ({ onRegisterClick, onLogin }) => {
           <Col md={8} lg={5}>
             {/* Logo */}
             <div className="text-center mb-4">
-              <h1 className="display-5 fw-bold">
-                <img src="public/images/fortuna script logo 2.png" style={{ width: '400px' }} alt="" />
-              </h1>
+              <div className="logo-box mx-auto mb-3">
+                <Gem size={40} color="white" />
+              </div>
+               <h1 className="display-5 fw-bold">
+                <span className="gradient-text">Fortuna</span>
+                <span className="text-dark"> Lotto</span>
+               </h1>
               <p className="text-muted d-flex align-items-center justify-content-center gap-2">
                 <Sparkles size={16} className="text-warning" />
                 A szerencse hozzád szól!
@@ -161,7 +165,7 @@ const LoginPage = ({ onRegisterClick, onLogin }) => {
           </p>
           <div className="p-3 rounded-3 mb-4" style={{ background: '#fef2f2', border: '1px solid #fecaca' }}>
             <p className="text-danger small mb-0">
-              📧 Kapcsolat: <strong>support@fortunascript.hu</strong>
+              📧 Kapcsolat: <strong>fortunalotto343@gmail.com</strong>
             </p>
           </div>
           <Button variant="outline-secondary" className="w-100 fw-bold rounded-3"

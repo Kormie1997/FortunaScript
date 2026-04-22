@@ -164,7 +164,10 @@ const HomePage = ({ onGameSelect, onInfoSelect }) => {
           <Row className="g-4 mb-4">
             <Col md={4}>
               <div className="d-flex align-items-center gap-2 mb-3">
-                <span className="fw-bold fs-5"> <img src="public/images/fortuna script logo.png" style={{ width: '200px' }} alt="" /></span>
+                <div className="p-2 rounded-2" style={{ background: 'linear-gradient(135deg, #f59e0b, #ea580c)' }}>
+                  <Gem size={20} color="white" />
+                </div>
+                <span className="fw-bold fs-5">Fortuna Lotto</span>
               </div>
               <p className="text-white-50 small">
                 Magyarország megbízható online lottó platformja. Játssz felelősségteljesen!
@@ -238,7 +241,7 @@ const HomePage = ({ onGameSelect, onInfoSelect }) => {
 
           <hr className="border-secondary" />
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <p className="text-white-50 small mb-0">© {new Date().getFullYear()} Fortuna Script. Minden jog fenntartva.</p>
+            <p className="text-white-50 small mb-0">© {new Date().getFullYear()} FortunaLotto. Minden jog fenntartva.</p>
             <p className="text-white-50 small mb-0">🔒 Biztonságos és titkosított kapcsolat</p>
           </div>
         </Container>

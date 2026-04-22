@@ -85,7 +85,7 @@ function ResetPasswordPage({ onGoToLogin }) {
               </div>
               <h1 className="display-5 fw-bold">
                 <span className="gradient-text">Fortuna</span>
-                <span className="text-dark"> Lotto</span>
+                <span className="text-dark">Lotto</span>
               </h1>
               <p className="text-muted d-flex align-items-center justify-content-center gap-2">
                 <Sparkles size={16} className="text-warning" />

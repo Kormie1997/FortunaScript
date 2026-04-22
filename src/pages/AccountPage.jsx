@@ -26,6 +26,10 @@ const AccountPage = ({ user, onLogout, onBalanceUpdate }) => {
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [passwordLoading, setPasswordLoading]   = useState(false);
 
+  //Jelszó törlés
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   //Szelvények
   useEffect(() => {
     if (activeTab === 'tickets') {
@@ -131,6 +135,31 @@ const AccountPage = ({ user, onLogout, onBalanceUpdate }) => {
       setPasswordLoading(false);
     }
   };
+
+  const handleDeleteAccount = async () => {
+  setDeleteLoading(true);
+  try {
+    const response = await fetch('/api/users/delete-account', {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (response.ok) {
+      toast.success('Fiók sikeresen törölve! Várunk vissza! 👋', {
+        duration: 6000,
+      });
+      setTimeout(() => {
+        onLogout();
+      }, 4000);
+    } else {
+      toast.error('Nem sikerült a fiók törlése');
+    }
+  } catch {
+    toast.error('Szerverhiba');
+  } finally {
+    setDeleteLoading(false);
+    setShowDeleteConfirm(false);
+  }
+};
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -439,6 +468,33 @@ const AccountPage = ({ user, onLogout, onBalanceUpdate }) => {
                     Jelszó módosítása
                   </Button>
                 </form>
+              </div>
+
+              <div>
+                <h6 className="fw-bold mb-3">Veszélyzóna</h6>
+                <div className="border border-danger rounded-3 p-3">
+                  <p className="fw-medium mb-1 text-danger">Fiók törlése</p>
+                  <p className="text-muted small mb-3">Ez a művelet visszafordíthatatlan. Minden adatod véglegesen törlődik.</p>
+
+                  {!showDeleteConfirm ? (
+                    <Button variant="outline-danger" size="sm" onClick={() => setShowDeleteConfirm(true)}>
+                      Fiók törlése
+                    </Button>
+                  ) : (
+                    <div className="d-flex flex-column gap-2" style={{ maxWidth: '320px' }}>
+                      <p className="text-danger fw-bold mb-1">Biztosan törölni szeretnéd a fiókodat?</p>
+                      <div className="d-flex gap-2">
+                        <Button variant="danger" size="sm" onClick={handleDeleteAccount} disabled={deleteLoading}>
+                          {deleteLoading ? <Spinner size="sm" animation="border" className="me-1" /> : null}
+                          Igen, törlöm
+                        </Button>
+                        <Button variant="outline-secondary" size="sm" onClick={() => setShowDeleteConfirm(false)}>
+                          Mégsem
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
