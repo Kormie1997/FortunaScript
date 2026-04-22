@@ -191,7 +191,7 @@ const RegisterPage = ({ onLoginClick, onRegister }) => {
           </div>
           <h4 className="fw-bold mb-2">Sikeres regisztráció! 🎉</h4>
           <p className="text-muted mb-2">
-            Üdvözlünk a Fortuna Lottó családjában, <strong>{formData.username}</strong>!
+            Üdvözlünk a Fortuna Script családjában, <strong>{formData.username}</strong>!
           </p>
           <p className="text-muted small mb-4">
             Küldtünk egy megerősítő emailt a <strong>{formData.email}</strong> címre.
