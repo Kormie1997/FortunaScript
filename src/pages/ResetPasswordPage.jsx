@@ -83,10 +83,9 @@ function ResetPasswordPage({ onGoToLogin }) {
               <div className="logo-box mx-auto mb-3">
                 <Gem size={40} color="white" />
               </div>
-              <h1 className="display-5 fw-bold">
-                <span className="gradient-text">Fortuna</span>
-                <span className="text-dark">Lotto</span>
-              </h1>
+              <div>
+                <img src="public/images/fslogo.png" style={{width: '200px'}} alt="" />
+              </div>
               <p className="text-muted d-flex align-items-center justify-content-center gap-2">
                 <Sparkles size={16} className="text-warning" />
                 Jelszó visszaállítása

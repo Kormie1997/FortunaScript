@@ -28,10 +28,9 @@ const Navigation = ({ user, currentView, onViewChange, onLogout, cartCount, onCa
           onClick={() => onViewChange('home')}
           className="d-flex align-items-center gap-2 cursor-pointer"
         >
-          <div className="card-orange text-white p-2 rounded-2">
-            <Sparkles size={24} />
+          <div>
+            <img src="public/images/fslogo.png" style={{width: '200px'}} alt="" />
           </div>
-          <span className="fw-bold fs-4 gradient-text">FortunaLotto</span>
           </Navbar.Brand>
 
         <Navbar.Toggle onClick={() => setExpanded(!expanded)} />

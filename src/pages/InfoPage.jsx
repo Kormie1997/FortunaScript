@@ -10,7 +10,7 @@ const PAGES = {
     badge: 'Szabályzat',
     sections: [
       {
-        title: 'Üdvözöljük a FortunaLotto Online Lottózójában!',
+        title: 'Üdvözöljük a FortunaScript Online Lottózójában!',
         content: `Magyarországon elérhető online lottó platformunkon különféle számsorsjátékokat játszhat, ahol saját számokat választhat, vagy gépi (véletlen) generálást kérhet. Minden játék egyenlegéről kerül levonásra a tét, és csak akkor érvényes, ha a befizetés sikeresen megtörtént.`
       },
       {
@@ -24,27 +24,27 @@ const PAGES = {
         ]
       },
       {
-        title: '🎱 Ötös Lottó',
+        title: <div><img src="public/images/otos.png" style={{width: '150px'}} alt="" /></div>,
         content: '90 számból kell 5-öt kiválasztani. A cél, hogy minél többet eltaláljon a hetente sorsolt 5 nyerőszám közül. Már 2 találattal is nyerhet. A főnyereményt az 5 találat jelenti. Játszható 1 vagy több hétre előre, saját számokkal vagy gépi generálással.'
       },
       {
-        title: '🎱 Hatos Lottó',
+        title: <div><img src="public/images/hatos.png" style={{width: '150px'}} alt="" /></div>,
         content: '45 számból kell 6-ot kiválasztani. Már 3 találattal is nyerhet. A főnyereményt a 6 találat jelenti. Játszható saját számokkal vagy gépi generálással, több sorsolásra előre.'
       },
       {
-        title: '🎱 Skandináv Lottó',
+        title: <div><img src="public/images/skandi.png" style={{width: '150px'}} alt="" /></div>,
         content: '35 számból kell 7-et kiválasztani. Hetente két sorsolás történik. Legalább 4 találat szükséges a nyereményhez. A főnyereményt a 7 találat jelenti. Játszható saját számokkal vagy véletlen generálással, 1 vagy 5 hétre.'
       },
       {
-        title: '🌍 Eurojackpot',
+        title: <div><img src="public/images/eurojack.png" style={{width: '150px'}} alt="" /></div>,
         content: 'Nemzetközi lottójáték: az „A" mezőn 50 számból 5-öt, a „B" mezőn 12 számból 2-t kell megjelölni. Heti két sorsolás (kedd és péntek). Már alacsonyabb találatokkal is nyerhet, a főnyeremény akár több tízmillió euró is lehet.'
       },
       {
-        title: '🃏 Joker',
+        title: <div><img src="public/images/joker.png" style={{width: '150px'}} alt="" /></div>,
         content: 'Kiegészítő játék több lottó mellett. Egy 6 jegyű számot kell megjátszani. A nyeréshez a kisorsolt Joker szám utolsó 2–6 számjegyét kell sorrendben eltalálni. Fix nyeremények a találatok számától függően.'
       },
       {
-        title: '🎲 Kenó',
+        title: <div><img src="public/images/keno.png" style={{width: '150px'}} alt="" /></div>,
         content: '80 számból legfeljebb 10 számot jelölhet meg. Naponta többször sorsolnak 20 nyerőszámot. Minél több találat, annál nagyobb a nyeremény. Bizonyos tétszámoknál akkor is nyerhet, ha 0 találata van.'
       },
     ]
@@ -59,7 +59,7 @@ const PAGES = {
     sections: [
       {
         title: 'Hogyan kapja meg nyereményét?',
-        content: 'Nyereményeit az alábbi módon veheti fel a FortunaLotto-n:'
+        content: 'Nyereményeit az alábbi módon veheti fel a FortunaScript-en:'
       },
       {
         title: 'Kisebb nyeremények (600 000 Ft alatt)',
@@ -123,7 +123,7 @@ const PAGES = {
     sections: [
       {
         title: 'Adatvédelmi elkötelezettségünk',
-        content: 'A FortunaLotto elkötelezett az Ön személyes adatainak védelme iránt, és a GDPR valamint a magyar adatvédelmi törvények teljes körű betartásával kezeli azokat.'
+        content: 'A FortunaScript elkötelezett az Ön személyes adatainak védelme iránt, és a GDPR valamint a magyar adatvédelmi törvények teljes körű betartásával kezeli azokat.'
       },
       {
         title: 'Milyen adatokat kezelünk?',
@@ -163,7 +163,7 @@ const PAGES = {
     sections: [
       {
         title: 'Általános rendelkezések',
-        content: 'Ezen feltételek szabályozzák a FortunaLotto Online Lottózó oldal használatát. Az oldal használatával Ön elfogadja ezeket a feltételeket. Kérjük, figyelmesen olvassa el őket.'
+        content: 'Ezen feltételek szabályozzák a FortunaScript Online Lottózó oldal használatát. Az oldal használatával Ön elfogadja ezeket a feltételeket. Kérjük, figyelmesen olvassa el őket.'
       },
       {
         title: 'Főbb szabályok',
@@ -230,7 +230,7 @@ const PAGES = {
     sections: [
       {
         title: '1. Regisztrálj és jelentkezz be',
-        content: 'Hozz létre egy fiókot a FortunaLotto-n! Add meg a felhasználóneved, email címed és jelszavad. Erősítsd meg az email címedet a kapott levélben, majd jelentkezz be.'
+        content: 'Hozz létre egy fiókot a FortunaScript-en! Add meg a felhasználóneved, email címed és jelszavad. Erősítsd meg az email címedet a kapott levélben, majd jelentkezz be.'
       },
       {
         title: '2. Töltsd fel az egyenleged',
@@ -277,7 +277,7 @@ const PAGES = {
     sections: [
       {
         title: 'Kik vagyunk?',
-        content: 'A FortunaLotto Kormos Levente, Takács Bence, Varga Bálint közös víziójából született még tavaly áprilisban. Már akkor egyértelmű volt számunkra, hogy egy olyan digitális platformot szeretnénk létrehozni, amely új szintre emeli a lottózás élményét Magyarországon. 2026-ban indítottuk el a FortunaLotto-t azzal a céllal, hogy a hagyományos lottójátékokat egy modern, biztonságos és felhasználóközpontú online környezetbe helyezzük. Fókuszunk a megbízhatóságon, az átlátható működésen és a gördülékeny felhasználói élményen van. A FortunaLotto nem csupán egy platform – egy új szemlélet a lottózás világában. Olyan megoldást építünk, ahol a technológia és az élmény kéz a kézben jár.'
+        content: 'A FortunaScript Kormos Levente, Takács Bence, Varga Bálint közös víziójából született még tavaly áprilisban. Már akkor egyértelmű volt számunkra, hogy egy olyan digitális platformot szeretnénk létrehozni, amely új szintre emeli a lottózás élményét Magyarországon. 2026-ban indítottuk el a FortunaScript-t azzal a céllal, hogy a hagyományos lottójátékokat egy modern, biztonságos és felhasználóközpontú online környezetbe helyezzük. Fókuszunk a megbízhatóságon, az átlátható működésen és a gördülékeny felhasználói élményen van. A FortunaScript nem csupán egy platform – egy új szemlélet a lottózás világában. Olyan megoldást építünk, ahol a technológia és az élmény kéz a kézben jár.'
       },
       {
         title: 'Küldetésünk',
