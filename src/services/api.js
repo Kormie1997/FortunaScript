@@ -41,7 +41,8 @@ const api = {
       method: 'POST',
       body: JSON.stringify({ amount })
     }),
-    toggleMaintenance: () => Promise.resolve(),
+    toggleMaintenance: () => api.request('/admin/settings/maintenance/toggle', { method: 'POST' }),
+    getMaintenance:    () => api.request('/admin/settings/maintenance'),
     toggleDrawLock: () => api.request('/admin/settings/draw-lock/toggle', { method: 'POST' }),
     getDrawLock:    () => api.request('/admin/settings/draw-lock'),
     backup:            () => Promise.resolve(),
@@ -109,6 +110,7 @@ const api = {
       method: 'POST',
       body: JSON.stringify({ amount })
     }),
+    backup: () => api.request('/admin/backup'),
   },
 };
 

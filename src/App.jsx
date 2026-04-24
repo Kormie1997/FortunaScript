@@ -25,6 +25,7 @@ function App() {
   const [showCart, setShowCart]           = useState(false);
   const [specialRoute, setSpecialRoute]   = useState(null);
   const [infoPage, setInfoPage] = useState(null);
+  const [maintenance, setMaintenance] = useState(false);
 
   useEffect(() => {
     const path   = window.location.pathname;
@@ -67,6 +68,13 @@ function App() {
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
+
+  useEffect(() => {
+    fetch('/api/admin/settings/maintenance')
+      .then(r => r.json())
+      .then(data => setMaintenance(data.isEnabled))
+      .catch(() => {});
+  }, []);
 
   const goToLogin = () => {
     setSpecialRoute(null);
@@ -210,6 +218,22 @@ function App() {
       <>
         <Toaster position="top-right" richColors />
         <ResetPasswordPage onGoToLogin={goToLogin} />
+      </>
+    );
+  }
+
+  if (maintenance && !user?.roles?.includes('admin')) {
+    return (
+      <>
+        <Toaster position="top-right" richColors />
+        <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+          <div className="text-center p-5">
+            <div style={{ fontSize: '64px' }}>🔧</div>
+            <h1 className="fw-bold mt-3">Karbantartás alatt</h1>
+            <p className="text-muted mt-2">Az oldal jelenleg karbantartás alatt van.<br/>Kérjük, látogass vissza később!</p>
+            <p className="text-muted small mt-3">— FortunaLotto csapata</p>
+          </div>
+        </div>
       </>
     );
   }

@@ -112,6 +112,17 @@ const AdminPage = ({ user }) => {
   if (activeTab === 'draws') loadDraws();
   }, [drawFilter]);
 
+  useEffect(() => {
+  if (activeTab === 'settings') {
+    api.admin.getMaintenance()
+      .then(data => setSystemStatus(prev => ({ ...prev, maintenance: data.isEnabled })))
+      .catch(() => {});
+    api.admin.getDrawLock()
+      .then(data => setSystemStatus(prev => ({ ...prev, drawLocked: data.isLocked })))
+      .catch(() => {});
+  }
+}, [activeTab]);
+
   //Szelvény vásárlás lock
   useEffect(() => {
   if (activeTab === 'settings') {
@@ -120,6 +131,8 @@ const AdminPage = ({ user }) => {
       .catch(() => {});
   }
 }, [activeTab]);
+
+
 
   const loadStats = async () => {
     setLoadingStats(true);
@@ -190,14 +203,14 @@ const AdminPage = ({ user }) => {
   };
 
   const toggleMaintenance = async () => {
-    try {
-      await api.admin.toggleMaintenance();
-      setSystemStatus(prev => ({ ...prev, maintenance: !prev.maintenance }));
-      toast.info('Karbantartási mód megváltozott');
-    } catch (err) {
-      toast.error('Hiba történt');
-    }
-  };
+  try {
+    const result = await api.admin.toggleMaintenance();
+    setSystemStatus(prev => ({ ...prev, maintenance: result.isEnabled }));
+    toast.success(result.isEnabled ? '🔧 Karbantartási mód bekapcsolva!' : '✅ Karbantartási mód kikapcsolva!');
+  } catch {
+    toast.error('Hiba történt');
+  }
+};
 
   const toggleDrawLock = async () => {
   try {
@@ -210,13 +223,23 @@ const AdminPage = ({ user }) => {
 };
 
   const runBackup = async () => {
-    try {
-      await api.admin.backup();
-      toast.success('Biztonsági mentés elindítva');
-    } catch (err) {
-      toast.error('Mentés sikertelen');
-    }
-  };
+  try {
+    const response = await fetch('/api/admin/backup', {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Mentés sikertelen');
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `backup_${new Date().toISOString().slice(0,10)}.sql`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    toast.success('Biztonsági mentés letöltve!');
+  } catch {
+    toast.error('Mentés sikertelen');
+  }
+};
 
   const loadDraws = async () => {
   setLoadingDraws(true);
