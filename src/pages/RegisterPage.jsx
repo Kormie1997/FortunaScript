@@ -50,13 +50,10 @@ const RegisterPage = ({ onLoginClick, onRegister }) => {
           <Col md={8} lg={5}>
             {/* Logo */}
             <div className="text-center mb-4">
-              <div className="logo-box mx-auto mb-3">
-                <Gem size={40} color="white" />
-              </div>
-              <h1 className="display-5 fw-bold">
-                <span className="gradient-text">Fortuna</span>
-                <span className="text-dark"> Lotto</span>
-              </h1>
+                <p></p>
+                <div>
+                  <img src="public/images/fslogo.png" style={{width: '250px'}} alt="" />
+                </div>
               <p className="text-muted d-flex align-items-center justify-content-center gap-2">
                 <Sparkles size={16} className="text-warning" />
                 Csatlakozz a nyertesekhez!
@@ -191,7 +188,7 @@ const RegisterPage = ({ onLoginClick, onRegister }) => {
           </div>
           <h4 className="fw-bold mb-2">Sikeres regisztráció! 🎉</h4>
           <p className="text-muted mb-2">
-            Üdvözlünk a Fortuna Lottó családjában, <strong>{formData.username}</strong>!
+            Üdvözlünk a FortunaScript Online Lottózó családjában, <strong>{formData.username}</strong>!
           </p>
           <p className="text-muted small mb-4">
             Küldtünk egy megerősítő emailt a <strong>{formData.email}</strong> címre.

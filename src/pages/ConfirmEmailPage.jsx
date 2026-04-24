@@ -44,11 +44,9 @@ function ConfirmEmailPage({ onGoToLogin }) {
 
         {/* Logo */}
         <div className="mb-4">
-          <div className="d-inline-flex align-items-center justify-content-center rounded-3 mb-3"
-            style={{ width: '64px', height: '64px', background: 'linear-gradient(135deg, #f59e0b, #ea580c)' }}>
-            <Mail size={32} color="white" />
+          <div>
+            <img src="public/images/fslogo.png" style={{width: '300px'}} alt="" />
           </div>
-          <h4 className="fw-bold">Fortuna Lotto</h4>
         </div>
 
         {status === 'loading' && (

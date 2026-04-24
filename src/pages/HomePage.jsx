@@ -164,14 +164,22 @@ const HomePage = ({ onGameSelect, onInfoSelect }) => {
           <Row className="g-4 mb-4">
             <Col md={4}>
               <div className="d-flex align-items-center gap-2 mb-3">
-                <div className="p-2 rounded-2" style={{ background: 'linear-gradient(135deg, #f59e0b, #ea580c)' }}>
-                  <Gem size={20} color="white" />
+                <div>
+                  <img src="public/images/fslogo2.png" style={{width: '200px',}} alt="" />
                 </div>
-                <span className="fw-bold fs-5">Fortuna Lotto</span>
               </div>
               <p className="text-white-50 small">
                 Magyarország megbízható online lottó platformja. Játssz felelősségteljesen!
               </p>
+              <p className="text-white-50 small">
+                A FortunaScript egy fiktív projekt, amelyet egy Vizsgaremek céljából fejlesztettek. Nem valós szolgáltatás.
+              </p>
+              <p className="text-white-50 small">
+                A projektben lévő játékok a Szerencsjáték Zrt. által üzemeltetett valós lottójátékokon alapulnak, de a FortunaScript nem kapcsolódik semmilyen hivatalos szerencsejáték szolgáltatóhoz.
+              </p>
+                <div>
+                  <img src="public/images/szrt-logo-login.svg" style={{width: '280px',}} alt="" />
+                </div>
             </Col>
 
             <Col md={2}>
@@ -241,7 +249,7 @@ const HomePage = ({ onGameSelect, onInfoSelect }) => {
 
           <hr className="border-secondary" />
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <p className="text-white-50 small mb-0">© {new Date().getFullYear()} FortunaLotto. Minden jog fenntartva.</p>
+            <p className="text-white-50 small mb-0">© {new Date().getFullYear()} FortunaScript. Minden jog fenntartva.</p>
             <p className="text-white-50 small mb-0">🔒 Biztonságos és titkosított kapcsolat</p>
           </div>
         </Container>
